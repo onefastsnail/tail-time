@@ -1,6 +1,6 @@
 locals {
   project      = "tail-time"
-  src_path     = "../../cmd/lambda"
+  src_path     = "../../cmd/tail-time-lambda"
   binary_path  = "./dist/bin/${local.project}"
   binary_name  = local.project
   archive_path = "./dist/app.zip"
@@ -110,3 +110,4 @@ resource aws_iam_role_policy_attachment lambda {
   role       = aws_iam_role.lambda.name
   policy_arn = aws_iam_policy.lambda.arn
 }
+

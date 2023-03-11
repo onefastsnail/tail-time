@@ -2,9 +2,13 @@ package main
 
 import (
 	"context"
-	"github.com/joho/godotenv"
 	"log"
+	"os"
 
+	"github.com/joho/godotenv"
+
+	"tail-time/internal/destination"
+	"tail-time/internal/source/openai"
 	"tail-time/internal/tales"
 )
 
@@ -17,15 +21,10 @@ func main() {
 	//topic := os.Args[1]
 	topic := "dinosaurs"
 
-	tale, err := tales.Generate(context.TODO(), topic)
-	if err != nil {
-		log.Fatal("Failed to generate tale: [%w]", err)
-	}
+	tales := tales.New(tales.Config{
+		Source:      openai.New(openai.Config{APIKey: os.Getenv("OPENAI_API_KEY")}),
+		Destination: destination.Log{},
+	})
 
-	err = tales.SendToKindle(tale)
-	if err != nil {
-		log.Fatalf("Failed to send tale to Kindle: [%e]", err)
-	}
-
-	log.Printf("A tale about %s... %s", topic, tale)
+	tales.Run(context.TODO(), topic)
 }

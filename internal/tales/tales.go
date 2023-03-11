@@ -3,34 +3,37 @@ package tales
 import (
 	"context"
 	"fmt"
-	"os"
 
-	"tail-time/internal/openai"
+	"tail-time/internal/destination"
+	"tail-time/internal/source"
 )
 
-//type Tales struct {
-//	generator
-//}
-
-func Generate(ctx context.Context, topic string) (string, error) {
-	client := openai.NewClient(os.Getenv("OPENAI_API_KEY"))
-
-	prompt := openai.CompletionPrompt{
-		Model:       "text-davinci-003",
-		Prompt:      fmt.Sprintf("Write me a new 100 word story for my kids about %s", topic),
-		MaxTokens:   4000,
-		Temperature: 0,
-	}
-
-	response, err := client.Completion(ctx, prompt)
-	if err != nil {
-		return "", fmt.Errorf("failed to get prompt completetion: %w", err)
-	}
-
-	// TODO handle multiple choices and even none
-	return response.Choices[0].Text, nil
+type Config struct {
+	Name        string
+	Source      source.Source
+	Destination destination.Destination
 }
 
-func SendToKindle(story string) error {
+type Tales struct {
+	Config
+}
+
+func New(config Config) *Tales {
+	return &Tales{
+		config,
+	}
+}
+
+func (t Tales) Run(ctx context.Context, topic string) error {
+	tale, err := t.Source.Generate(ctx, topic)
+	if err != nil {
+		return fmt.Errorf("failed to generate tale: %w", err)
+	}
+
+	err = t.Destination.Save(tale)
+	if err != nil {
+		return fmt.Errorf("failed to send tale to destination: %w", err)
+	}
+
 	return nil
 }
