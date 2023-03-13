@@ -5,5 +5,5 @@ package source
 import "context"
 
 type Source interface {
-	Generate(ctx context.Context, topic string) (string, error)
+	Generate(ctx context.Context) (string, error)
 }

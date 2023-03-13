@@ -3,11 +3,13 @@ package openai
 import (
 	"context"
 	"fmt"
+
 	oai "tail-time/internal/openai"
 )
 
 type Config struct {
 	APIKey string
+	Topic  string
 }
 
 type OpenAI struct {
@@ -18,12 +20,12 @@ func New(config Config) *OpenAI {
 	return &OpenAI{config: config}
 }
 
-func (o OpenAI) Generate(ctx context.Context, topic string) (string, error) {
+func (o OpenAI) Generate(ctx context.Context) (string, error) {
 	client := oai.NewClient(o.config.APIKey)
 
 	prompt := oai.CompletionPrompt{
 		Model:       "text-davinci-003", // TODO change model
-		Prompt:      fmt.Sprintf("Write me a new 100 word story for my kids about %s", topic),
+		Prompt:      fmt.Sprintf("Write me a new exciting 1000 word story for my kids about %s", o.config.Topic),
 		MaxTokens:   4000,
 		Temperature: 0,
 	}

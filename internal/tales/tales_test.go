@@ -27,7 +27,7 @@ func (s *TalesSuite) SetupTest() {
 
 func (s *TalesSuite) TestRun_OK() {
 	source := mockSource.NewMockSource(s.ctrl)
-	source.EXPECT().Generate(gomock.Any(), "dinosaurs").Return("a tale", nil)
+	source.EXPECT().Generate(gomock.Any()).Return("a tale", nil)
 
 	destination := mockDestination.NewMockDestination(s.ctrl)
 	destination.EXPECT().Save("a tale").Times(1)
@@ -37,14 +37,14 @@ func (s *TalesSuite) TestRun_OK() {
 		Destination: destination,
 	})
 
-	err := tales.Run(context.TODO(), "dinosaurs")
+	err := tales.Run(context.TODO())
 
 	s.NoError(err)
 }
 
 func (s *TalesSuite) TestSource_Fails() {
 	source := mockSource.NewMockSource(s.ctrl)
-	source.EXPECT().Generate(gomock.Any(), "dinosaurs").Return("", errors.New("oops"))
+	source.EXPECT().Generate(gomock.Any()).Return("", errors.New("oops"))
 
 	destination := mockDestination.NewMockDestination(s.ctrl)
 	destination.EXPECT().Save(gomock.Any()).Times(0)
@@ -54,14 +54,14 @@ func (s *TalesSuite) TestSource_Fails() {
 		Destination: destination,
 	})
 
-	err := tales.Run(context.TODO(), "dinosaurs")
+	err := tales.Run(context.TODO())
 
 	s.Equal("failed to generate tale: oops", err.Error())
 }
 
 func (s *TalesSuite) TestDestination_Fails() {
 	source := mockSource.NewMockSource(s.ctrl)
-	source.EXPECT().Generate(gomock.Any(), "dinosaurs").Times(1)
+	source.EXPECT().Generate(gomock.Any()).Times(1)
 
 	destination := mockDestination.NewMockDestination(s.ctrl)
 	destination.EXPECT().Save(gomock.Any()).Return(errors.New("oops"))
@@ -71,7 +71,7 @@ func (s *TalesSuite) TestDestination_Fails() {
 		Destination: destination,
 	})
 
-	err := tales.Run(context.TODO(), "dinosaurs")
+	err := tales.Run(context.TODO())
 
 	s.Equal("failed to send tale to destination: oops", err.Error())
 }

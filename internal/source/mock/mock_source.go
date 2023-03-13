@@ -35,16 +35,16 @@ func (m *MockSource) EXPECT() *MockSourceMockRecorder {
 }
 
 // Generate mocks base method.
-func (m *MockSource) Generate(ctx context.Context, topic string) (string, error) {
+func (m *MockSource) Generate(ctx context.Context) (string, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Generate", ctx, topic)
+	ret := m.ctrl.Call(m, "Generate", ctx)
 	ret0, _ := ret[0].(string)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Generate indicates an expected call of Generate.
-func (mr *MockSourceMockRecorder) Generate(ctx, topic interface{}) *gomock.Call {
+func (mr *MockSourceMockRecorder) Generate(ctx interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Generate", reflect.TypeOf((*MockSource)(nil).Generate), ctx, topic)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Generate", reflect.TypeOf((*MockSource)(nil).Generate), ctx)
 }

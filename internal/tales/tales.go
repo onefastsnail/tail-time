@@ -24,8 +24,8 @@ func New(config Config) *Tales {
 	}
 }
 
-func (t Tales) Run(ctx context.Context, topic string) error {
-	tale, err := t.Source.Generate(ctx, topic)
+func (t Tales) Run(ctx context.Context) error {
+	tale, err := t.Source.Generate(ctx)
 	if err != nil {
 		return fmt.Errorf("failed to generate tale: %w", err)
 	}

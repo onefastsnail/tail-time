@@ -1,8 +1,20 @@
 package s3
 
+import (
+	"context"
+	"fmt"
+	"strings"
+
+	"github.com/google/uuid"
+
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/config"
+	"github.com/aws/aws-sdk-go-v2/service/s3"
+)
+
 type Config struct {
-	bucket string
-	folder string
+	BucketName string
+	Path       string
 }
 
 type S3 struct {
@@ -14,5 +26,25 @@ func New(config Config) *S3 {
 }
 
 func (s S3) Save(tale string) error {
+	cfg, err := config.LoadDefaultConfig(context.TODO())
+	if err != nil {
+		return fmt.Errorf("failed to load sdk config: %w", err)
+	}
+
+	client := s3.NewFromConfig(cfg, func(o *s3.Options) {
+		o.Region = "eu-central-1"
+	})
+
+	objectKey := fmt.Sprintf("%s/%s.txt", s.config.Path, uuid.New().String())
+
+	_, err = client.PutObject(context.TODO(), &s3.PutObjectInput{
+		Bucket: aws.String(s.config.BucketName),
+		Key:    aws.String(objectKey),
+		Body:   strings.NewReader(tale),
+	})
+	if err != nil {
+		return fmt.Errorf("failed to upload object to s3: %w", err)
+	}
+
 	return nil
 }
