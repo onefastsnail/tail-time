@@ -13,7 +13,7 @@ import (
 )
 
 func HandleRequest(ctx context.Context, event interface{}) (string, error) {
-	topic := "dinosaurs" // TODO get from event, Alexa event maybe?
+	topic := "friendship" // TODO get from event, Alexa event maybe?
 
 	tales := tales.New(tales.Config{
 		Source: openai.New(openai.Config{

@@ -19,6 +19,7 @@ An account per environment
       "Effect": "Allow",
       "Action": [
         "ses:*",
+        "events:*",
         "s3:*",
         "logs:*",
         "iam:*",

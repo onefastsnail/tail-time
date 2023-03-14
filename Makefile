@@ -9,12 +9,6 @@ test:
 build:
 	go build -o ./build/tail-time cmd/tail-time/main.go
 
-docker-build:
-	docker build -t tail-time:latest .
-
-docker-run:
-	docker run -it tail-time dinosaurs
-
 cov-func:
 	mkdir -p build
 	FILE=`mktemp build/coverage.XXXX` && \

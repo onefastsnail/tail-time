@@ -125,8 +125,8 @@ resource "aws_iam_role_policy_attachment" "generate_lambda" {
 
 resource "aws_cloudwatch_event_rule" "every_day" {
   name                = "every-day"
-  description         = "Fires every once a day"
-  schedule_expression = "cron(0 17 * * ? *)"
+  description         = "Fires once a day"
+  schedule_expression = "cron(0 14 * * ? *)"
 }
 
 resource "aws_cloudwatch_event_target" "every_day" {
@@ -170,6 +170,9 @@ resource "aws_lambda_function" "send_app" {
   runtime       = "go1.x"
   memory_size   = 128
   timeout       = 120
+  ephemeral_storage {
+    size = 512
+  }
 
   filename         = local.send_archive_path
   source_code_hash = data.archive_file.send_app_archive.output_base64sha256
@@ -216,6 +219,7 @@ resource "aws_iam_policy" "send_lambda" {
       {
         Action = [
           "ses:SendEmail",
+          "ses:SendRawEmail",
         ]
         Effect   = "Allow"
         Resource = aws_ses_email_identity.email.arn

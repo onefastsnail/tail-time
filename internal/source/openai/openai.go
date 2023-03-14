@@ -25,7 +25,7 @@ func (o OpenAI) Generate(ctx context.Context) (string, error) {
 
 	prompt := oai.CompletionPrompt{
 		Model:       "text-davinci-003", // TODO change model
-		Prompt:      fmt.Sprintf("Write me a new exciting 1000 word story for my kids about %s", o.config.Topic),
+		Prompt:      fmt.Sprintf("Write me a brand new exciting 800 word story for my kids about %s", o.config.Topic),
 		MaxTokens:   4000,
 		Temperature: 0,
 	}
