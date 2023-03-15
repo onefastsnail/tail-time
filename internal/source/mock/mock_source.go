@@ -7,6 +7,7 @@ package mock
 import (
 	context "context"
 	reflect "reflect"
+	tale "tail-time/internal/tale"
 
 	gomock "github.com/golang/mock/gomock"
 )
@@ -35,10 +36,10 @@ func (m *MockSource) EXPECT() *MockSourceMockRecorder {
 }
 
 // Generate mocks base method.
-func (m *MockSource) Generate(ctx context.Context) (string, error) {
+func (m *MockSource) Generate(ctx context.Context) (tale.Tale, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Generate", ctx)
-	ret0, _ := ret[0].(string)
+	ret0, _ := ret[0].(tale.Tale)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

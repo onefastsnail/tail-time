@@ -4,11 +4,12 @@ import (
 	"context"
 	"log"
 	"os"
-	"tail-time/internal/source/openai"
 
 	"github.com/joho/godotenv"
 
 	"tail-time/internal/destination/email"
+	oai "tail-time/internal/openai"
+	"tail-time/internal/source/openai"
 	"tail-time/internal/tales"
 )
 
@@ -19,10 +20,17 @@ func main() {
 	}
 
 	//topic := os.Args[1]
-	topic := "dinosaurs"
+	topic := "dinosaurs and cars"
 
 	tales := tales.New(tales.Config{
-		Source: openai.New(openai.Config{APIKey: os.Getenv("OPENAI_API_KEY"), Topic: topic}),
+		Source: openai.New(openai.Config{
+			Topic:    topic,
+			Language: "English",
+			Client: oai.New(oai.Config{
+				APIKey:  os.Getenv("OPENAI_API_KEY"),
+				BaseURL: "https://api.openai.com",
+			}),
+		}),
 		//Source: dummy.New(dummy.Config{Topic: topic}),
 		//Destination: destination.Log{},
 		Destination: email.New(email.Config{Recipient: os.Getenv("EMAIL_DESTINATION")}),

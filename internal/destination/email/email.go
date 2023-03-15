@@ -6,12 +6,13 @@ import (
 	"fmt"
 	"os"
 
-	"gopkg.in/gomail.v2"
-
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/ses"
 	"github.com/aws/aws-sdk-go-v2/service/ses/types"
+	"gopkg.in/gomail.v2"
+
+	"tail-time/internal/tale"
 )
 
 type Config struct {
@@ -26,22 +27,24 @@ func New(config Config) *Email {
 	return &Email{config: config}
 }
 
-func writeTaleToDisk(tale string) error {
-	file, err := os.Create("/tmp/tale.txt")
+func writeTaleToDisk(tale tale.Tale) (string, error) {
+	fileName := fmt.Sprintf("/tmp/a-tale-about-%s-in-%s-%s.txt", tale.Topic, tale.Language, tale.CreatedAt.Format("01-02-2006"))
+
+	file, err := os.Create(fileName)
 	if err != nil {
-		return fmt.Errorf("failed to create file: %w", err)
+		return "", fmt.Errorf("failed to create file: %w", err)
 	}
 	defer file.Close()
 
-	_, err = file.WriteString(tale)
+	_, err = file.WriteString(tale.Text)
 	if err != nil {
-		return fmt.Errorf("failed to write string to file: %w", err)
+		return "", fmt.Errorf("failed to write string to file: %w", err)
 	}
 
-	return nil
+	return fileName, nil
 }
 
-func (s Email) Save(tale string) error {
+func (s Email) Save(tale tale.Tale) error {
 	cfg, err := config.LoadDefaultConfig(context.TODO())
 	if err != nil {
 		return fmt.Errorf("failed to load sdk config: %w", err)
@@ -52,18 +55,21 @@ func (s Email) Save(tale string) error {
 	m := gomail.NewMessage()
 	m.SetHeader("From", s.config.Recipient)
 	m.SetHeader("To", s.config.Recipient)
-	m.SetHeader("Subject", "A new tale from Tail Time!")
-	m.SetBody("text/html", tale)
+	m.SetHeader("Subject", fmt.Sprintf("%s - A new tale about %s in %s from Tail Time!", tale.CreatedAt.Format("01-02-2006"), tale.Topic, tale.Language))
+	m.SetBody("text/plain", tale.Text)
 
-	err = writeTaleToDisk(tale)
+	fileName, err := writeTaleToDisk(tale)
 	if err != nil {
 		return err
 	}
 
-	m.Attach("/tmp/tale.txt")
+	m.Attach(fileName)
 
 	var emailRaw bytes.Buffer
-	m.WriteTo(&emailRaw)
+	_, err = m.WriteTo(&emailRaw)
+	if err != nil {
+		return err
+	}
 
 	input := &ses.SendRawEmailInput{
 		Destinations: []string{s.config.Recipient},

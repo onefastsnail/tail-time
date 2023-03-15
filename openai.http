@@ -1,0 +1,26 @@
+### What models we can use
+GET https://api.openai.com/v1/models
+Authorization: Bearer {{openaiToken}}
+
+
+### text-davinci-003
+POST https://api.openai.com/v1/completions
+Authorization: Bearer {{openaiToken}}
+Content-Type: application/json
+
+{
+"model": "text-davinci-003",
+"prompt": "Write me a brand new exciting 800 word story for my kids about dinosaurs in English",
+"max_tokens": 4000,
+"temperature": 0
+}
+
+### gpt-3.5-turbo
+POST https://api.openai.com/v1/chat/completions
+Authorization: Bearer {{openaiToken}}
+Content-Type: application/json
+
+{
+  "model": "gpt-3.5-turbo",
+  "messages": [{"role": "user", "content": "Write me a brand new exciting 800 word story for my kids about dinosaurs in English"}]
+}

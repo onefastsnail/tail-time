@@ -2,8 +2,12 @@
 
 package source
 
-import "context"
+import (
+	"context"
+
+	"tail-time/internal/tale"
+)
 
 type Source interface {
-	Generate(ctx context.Context) (string, error)
+	Generate(ctx context.Context) (tale.Tale, error)
 }

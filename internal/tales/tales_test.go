@@ -10,6 +10,7 @@ import (
 
 	mockDestination "tail-time/internal/destination/mock"
 	mockSource "tail-time/internal/source/mock"
+	"tail-time/internal/tale"
 )
 
 type TalesSuite struct {
@@ -26,25 +27,31 @@ func (s *TalesSuite) SetupTest() {
 }
 
 func (s *TalesSuite) TestRun_OK() {
+	// Given: The source will generate a tale
+	t := tale.Tale{Topic: "Test", Text: "Hoho"}
+
 	source := mockSource.NewMockSource(s.ctrl)
-	source.EXPECT().Generate(gomock.Any()).Return("a tale", nil)
+	source.EXPECT().Generate(gomock.Any()).Return(t, nil)
 
 	destination := mockDestination.NewMockDestination(s.ctrl)
-	destination.EXPECT().Save("a tale").Times(1)
+	destination.EXPECT().Save(t).Times(1)
 
 	tales := New(Config{
 		Source:      source,
 		Destination: destination,
 	})
 
+	// When: The tales workload is run
 	err := tales.Run(context.TODO())
 
+	// Then: There should be no errors
 	s.NoError(err)
 }
 
 func (s *TalesSuite) TestSource_Fails() {
+	// Given: The source will fail to generate a tale
 	source := mockSource.NewMockSource(s.ctrl)
-	source.EXPECT().Generate(gomock.Any()).Return("", errors.New("oops"))
+	source.EXPECT().Generate(gomock.Any()).Return(tale.Tale{}, errors.New("oops"))
 
 	destination := mockDestination.NewMockDestination(s.ctrl)
 	destination.EXPECT().Save(gomock.Any()).Times(0)
@@ -54,15 +61,19 @@ func (s *TalesSuite) TestSource_Fails() {
 		Destination: destination,
 	})
 
+	// When: The tales workload is run
 	err := tales.Run(context.TODO())
 
+	// Then: An error from the source
 	s.Equal("failed to generate tale: oops", err.Error())
 }
 
 func (s *TalesSuite) TestDestination_Fails() {
+	// Given: The source generates a tale
 	source := mockSource.NewMockSource(s.ctrl)
 	source.EXPECT().Generate(gomock.Any()).Times(1)
 
+	// And: The destination will fail to save
 	destination := mockDestination.NewMockDestination(s.ctrl)
 	destination.EXPECT().Save(gomock.Any()).Return(errors.New("oops"))
 
@@ -71,7 +82,9 @@ func (s *TalesSuite) TestDestination_Fails() {
 		Destination: destination,
 	})
 
+	// When: The tales workload is run
 	err := tales.Run(context.TODO())
 
+	// Then: An error from the destination
 	s.Equal("failed to send tale to destination: oops", err.Error())
 }

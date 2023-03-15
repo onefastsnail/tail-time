@@ -2,11 +2,13 @@ package destination
 
 import (
 	"log"
+
+	"tail-time/internal/tale"
 )
 
 type Log struct{}
 
-func (l Log) Save(tale string) error {
-	log.Printf("Got tale... %s", tale)
+func (l Log) Save(tale tale.Tale) error {
+	log.Printf("Got tale... %+v", tale)
 	return nil
 }

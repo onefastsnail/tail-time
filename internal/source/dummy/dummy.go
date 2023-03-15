@@ -2,7 +2,9 @@ package dummy
 
 import (
 	"context"
-	"fmt"
+	"time"
+
+	"tail-time/internal/tale"
 )
 
 type Config struct {
@@ -17,6 +19,11 @@ func New(config Config) *Dummy {
 	return &Dummy{config: config}
 }
 
-func (d Dummy) Generate(ctx context.Context) (string, error) {
-	return fmt.Sprintf("Once upon a time...there was a dummy tale about [%s]. The end.", d.config.Topic), nil
+func (d Dummy) Generate(ctx context.Context) (tale.Tale, error) {
+	return tale.Tale{
+		Topic:     "dummy",
+		Language:  "English",
+		Text:      "Once upon a time... The end.",
+		CreatedAt: time.Now(),
+	}, nil
 }

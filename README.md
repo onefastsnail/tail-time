@@ -1,25 +1,29 @@
 # T~~ai~~l time
 
-A wee project to help generate bedtime stories using OpenAI and then send those stories to an email.
+A fun wee project to help create bedtime stories (tales) using [OpenAI](https://openai.com/) and send those stories onwards to one's reading device.
 
-A very much WIP project, with plenty of ideas to bring these stories alive. The current goal was not to make a service out of this, but rather make something useful to my needs. I may make this into a usable service, however, this project can easily be forked and modified to fit your own needs.
+A very much WIP project.
+
+The current goal was not to make a public service out of this, but rather make something useful to my needs. I plan to make this into a usable service by publishing the generated stories for all to see, however until that time, this project can easily be forked and modified to fit your own needs.
 
 ## Background
 
-I love reading to my kids. I love technology. I had a small window of opportunity on evening and an idea to mix these two together by using OpenAI to help generate stories for my kids.
+I love reading to my kids. I love technology. I had a small window of opportunity one evening and an idea to mix these two together.
 
-These stories would then be sent to my Kindle for a nice reading experience.
+## Architecture 
 
-## Infra
-
-This solution is the definition of overkill, and could be done in far simpler ways, even in a single small script, but where would the fun be in that!
+This solution is the definition of :100: overkill, and could be done in far simpler ways, even in a single small script, but what would be the fun be in that!
 
 ![infra.svg](docs%2Finfra.png)
 
 ## Development
 
+Coming soon.
 
 ## Up next...
 
-- Build a story consisting of chapters
-- Infra to allow Alexa to invoke with the topic as input
+Many things but here is a few:
+
+- Feed to the story back into OpenAI for validation and improvements
+- Build a large story consisting of chapters covering various topics
+- Architecture to allow the pipeline to be invoked by Alexa custom skill

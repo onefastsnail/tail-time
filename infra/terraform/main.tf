@@ -170,6 +170,7 @@ resource "aws_lambda_function" "send_app" {
   runtime       = "go1.x"
   memory_size   = 128
   timeout       = 120
+
   ephemeral_storage {
     size = 512
   }

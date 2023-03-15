@@ -2,6 +2,7 @@ package s3
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"io"
 
@@ -9,6 +10,8 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
+
+	"tail-time/internal/tale"
 )
 
 type Config struct {
@@ -23,10 +26,10 @@ func New(config Config) *S3 {
 	return &S3{config: config}
 }
 
-func (s S3) Generate(ctx context.Context) (string, error) {
+func (s S3) Generate(ctx context.Context) (tale.Tale, error) {
 	cfg, err := config.LoadDefaultConfig(context.TODO())
 	if err != nil {
-		return "", fmt.Errorf("failed to load sdk config: %w", err)
+		return tale.Tale{}, fmt.Errorf("failed to load sdk config: %w", err)
 	}
 
 	client := s3.NewFromConfig(cfg, func(o *s3.Options) {
@@ -38,13 +41,19 @@ func (s S3) Generate(ctx context.Context) (string, error) {
 		Key:    aws.String(s.config.Event.S3.Object.Key),
 	})
 	if err != nil {
-		return "", fmt.Errorf("failed to get object from s3: %w", err)
+		return tale.Tale{}, fmt.Errorf("failed to get object from s3: %w", err)
 	}
 
 	body, err := io.ReadAll(result.Body)
 	if err != nil {
-		return "", fmt.Errorf("failed to read object body from s3: %w", err)
+		return tale.Tale{}, fmt.Errorf("failed to read object body from s3: %w", err)
 	}
 
-	return string(body), nil
+	var t tale.Tale
+	err = json.Unmarshal(body, &t)
+	if err != nil {
+		return tale.Tale{}, fmt.Errorf("failed to unmarshal tale: %w", err)
+	}
+
+	return t, nil
 }

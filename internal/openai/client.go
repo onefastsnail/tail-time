@@ -15,32 +15,38 @@ type CompletionPrompt struct {
 	Temperature int    `json:"temperature"`
 }
 
+type CompletionPromptResponseChoice struct {
+	Text string `json:"text"`
+}
+
 type CompletionPromptResponse struct {
-	ID      string `json:"id"`
-	Created int    `json:"created"`
-	Choices []struct {
-		Text string `json:"text"`
-	} `json:"choices"`
-	Usage struct {
+	ID      string                           `json:"id"`
+	Created int                              `json:"created"`
+	Choices []CompletionPromptResponseChoice `json:"choices"`
+	Usage   struct {
 		PromptTokens     int `json:"prompt_tokens"`
 		CompletionTokens int `json:"completion_tokens"`
 		TotalTokens      int `json:"total_tokens"`
 	}
 }
 
-type client struct {
-	apiKey     string
-	httpClient http.Client
+type Config struct {
+	APIKey     string
+	HTTPClient http.Client
+	BaseURL    string
 }
 
-func NewClient(APIKey string) *client {
-	return &client{
-		apiKey:     APIKey,
-		httpClient: http.Client{},
+type Client struct {
+	config Config
+}
+
+func New(config Config) *Client {
+	return &Client{
+		config: config,
 	}
 }
 
-func (client *client) Completion(ctx context.Context, prompt CompletionPrompt) (*CompletionPromptResponse, error) {
+func (client *Client) Completion(ctx context.Context, prompt CompletionPrompt) (*CompletionPromptResponse, error) {
 	payload := new(bytes.Buffer)
 
 	err := json.NewEncoder(payload).Encode(prompt)
@@ -48,14 +54,16 @@ func (client *client) Completion(ctx context.Context, prompt CompletionPrompt) (
 		return nil, fmt.Errorf("failed to serialize prompt: %w", err)
 	}
 
-	req, err := http.NewRequestWithContext(ctx, "POST", "https://api.openai.com/v1/completions", payload)
+	url := fmt.Sprintf("%s/v1/completions", client.config.BaseURL)
+
+	req, err := http.NewRequestWithContext(ctx, "POST", url, payload)
 	if err != nil {
 		return nil, fmt.Errorf("failed to build http request: %w", err)
 	}
 
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", client.apiKey))
-	res, err := client.httpClient.Do(req)
+	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", client.config.APIKey))
+	res, err := client.config.HTTPClient.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("failed to do http request: %w", err)
 	}

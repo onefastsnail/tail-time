@@ -6,6 +6,7 @@ package mock
 
 import (
 	reflect "reflect"
+	tale "tail-time/internal/tale"
 
 	gomock "github.com/golang/mock/gomock"
 )
@@ -34,7 +35,7 @@ func (m *MockDestination) EXPECT() *MockDestinationMockRecorder {
 }
 
 // Save mocks base method.
-func (m *MockDestination) Save(tale string) error {
+func (m *MockDestination) Save(tale tale.Tale) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Save", tale)
 	ret0, _ := ret[0].(error)
