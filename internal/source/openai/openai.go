@@ -3,6 +3,7 @@ package openai
 import (
 	"context"
 	"fmt"
+	"strings"
 	"time"
 
 	oai "tail-time/internal/openai"
@@ -26,9 +27,9 @@ func New(config Config) *OpenAI {
 func (o OpenAI) Generate(ctx context.Context) (tale.Tale, error) {
 	prompt := oai.CompletionPrompt{
 		Model:       "text-davinci-003", // TODO change model
-		Prompt:      fmt.Sprintf("Write me a brand new exciting 800 word story for my kids about %s in %s", o.config.Topic, o.config.Language),
+		Prompt:      fmt.Sprintf("Write an exciting 1000 word story for young children about %s in %s. And a title for this story.", o.config.Topic, o.config.Language),
 		MaxTokens:   4000,
-		Temperature: 0,
+		Temperature: 1,
 	}
 
 	response, err := o.config.Client.Completion(ctx, prompt)
@@ -36,10 +37,13 @@ func (o OpenAI) Generate(ctx context.Context) (tale.Tale, error) {
 		return tale.Tale{}, fmt.Errorf("failed to get prompt completetion: %w", err)
 	}
 
-	// TODO handle multiple choices and even none
+	// TODO clean this up, a quick hack to get moving
+	splits := strings.SplitN(response.Choices[0].Text, "\n\n", 3)
+
 	return tale.Tale{
 		Topic:     o.config.Topic,
-		Text:      response.Choices[0].Text,
+		Title:     strings.Replace(splits[1], "Title: ", "", 1),
+		Text:      splits[2],
 		Language:  o.config.Language,
 		CreatedAt: time.Now(),
 	}, nil

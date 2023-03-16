@@ -249,6 +249,6 @@ resource "aws_s3_bucket_notification" "send" {
     lambda_function_arn = aws_lambda_function.send_app.arn
     events              = ["s3:ObjectCreated:*"]
     filter_prefix       = "raw/"
-    filter_suffix       = ".txt"
+    filter_suffix       = ".json"
   }
 }

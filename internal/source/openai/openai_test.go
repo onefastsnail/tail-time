@@ -26,7 +26,7 @@ func (s *openAISuite) TestGenerate_OK() {
 		Created: 0,
 		Choices: []openai.CompletionPromptResponseChoice{
 			{
-				Text: "Once upon a time, there was a test...",
+				Text: "\n\nTitle: The Rare Orange Dinosaur\n\nOnce upon a time, there was a test...",
 			},
 		},
 		Usage: struct {
@@ -57,6 +57,7 @@ func (s *openAISuite) TestGenerate_OK() {
 	s.NoError(err)
 
 	s.Equal("dinosaurs", actual.Topic)
+	s.Equal("The Rare Orange Dinosaur", actual.Title)
 	s.Equal("Once upon a time, there was a test...", actual.Text)
 	s.Equal("English", actual.Language)
 }

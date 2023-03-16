@@ -5,6 +5,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
@@ -28,7 +29,9 @@ func New(config Config) *Email {
 }
 
 func writeTaleToDisk(tale tale.Tale) (string, error) {
-	fileName := fmt.Sprintf("/tmp/a-tale-about-%s-in-%s-%s.txt", tale.Topic, tale.Language, tale.CreatedAt.Format("01-02-2006"))
+	slugifyTitle := strings.ReplaceAll(tale.Title, " ", "-")
+
+	fileName := fmt.Sprintf("/tmp/%s-%s.txt", slugifyTitle, tale.CreatedAt.Format("01-02-2006"))
 
 	file, err := os.Create(fileName)
 	if err != nil {
@@ -55,9 +58,10 @@ func (s Email) Save(tale tale.Tale) error {
 	m := gomail.NewMessage()
 	m.SetHeader("From", s.config.Recipient)
 	m.SetHeader("To", s.config.Recipient)
-	m.SetHeader("Subject", fmt.Sprintf("%s - A new tale about %s in %s from Tail Time!", tale.CreatedAt.Format("01-02-2006"), tale.Topic, tale.Language))
+	m.SetHeader("Subject", fmt.Sprintf("%s - From Tail Time! - %s", tale.Title, tale.CreatedAt.Format("01-02-2006")))
 	m.SetBody("text/plain", tale.Text)
 
+	// A hack to easily attach the doc to the email, will fix
 	fileName, err := writeTaleToDisk(tale)
 	if err != nil {
 		return err

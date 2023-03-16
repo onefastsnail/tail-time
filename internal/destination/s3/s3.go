@@ -37,7 +37,7 @@ func (s S3) Save(tale tale.Tale) error {
 		o.Region = "eu-central-1"
 	})
 
-	objectKey := fmt.Sprintf("%s/%s.txt", s.config.Path, uuid.New().String())
+	objectKey := fmt.Sprintf("%s/%s.json", s.config.Path, uuid.New().String())
 
 	t, err := json.Marshal(tale)
 	if err != nil {
