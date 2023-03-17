@@ -26,7 +26,8 @@ func HandleRequest(ctx context.Context, event interface{}) (string, error) {
 			}),
 		}),
 		Destination: s3.New(s3.Config{
-			BucketName: os.Getenv("DESTINATION_BUCKET_NAME"), Path: "raw",
+			BucketName: os.Getenv("DESTINATION_BUCKET_NAME"),
+			Path:       "raw",
 		}),
 	})
 

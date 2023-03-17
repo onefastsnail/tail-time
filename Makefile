@@ -6,9 +6,6 @@ lint:
 test:
 	go test -cover ./...
 
-build:
-	go build -o ./build/tail-time cmd/tail-time/main.go
-
 cov-func:
 	mkdir -p build
 	FILE=`mktemp build/coverage.XXXX` && \

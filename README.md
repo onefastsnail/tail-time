@@ -4,7 +4,7 @@ A fun wee project that creates bedtime tales using [OpenAI](https://openai.com/)
 
 A very much WIP project.
 
-The current goal was not to make a public service out of this, but rather make something useful to my personal needs. I plan to make this into a usable service that would publish the generated tales for all to access, however until that time, this project can easily be forked and modified to fit your own needs. Enjoy!
+I plan to make this into a usable service that would publish the generated tales for all to access, however until that time, this project can easily be forked and modified to fit your own needs. Enjoy!
 
 ## Background
 
@@ -16,14 +16,13 @@ This solution is :100: overkill, and could be done in far simpler ways, even in 
 
 ![architecture.png](docs/architecture.png)
  
-However, the proposed and deployed architecture does provide advantages over its monolith counterpart such as:
+However, the implemented and deployed microservice architecture does provide advantages over its monolith counterpart such as:
 
-- Increased resilience should one part of the pipeline fail
-- Easier testing, debugging and local development
-- Easier and isolated deployments
-- Single responsibilities of the service implementations 
-- Improved scalability should that time ever come
-- Easier future development / maintenance
+- Increased resilience should one part of the pipeline fail.
+- Easier testing, debugging and local development.
+- Faster and easier future development / maintenance.
+- Single responsibilities of the service implementations. 
+- Improved scalability should that time ever come.
 
 All services are written in [Go](https://go.dev/).
 
@@ -37,6 +36,7 @@ Coming soon.
 
 Many things in the roadmap but here are a few:
 
+- Get creative with the topics, maybe use OpenAI to get those.
 - Experiment and explore different prompts and models. 
   - Many of the updated models are often inaccessible due to traffic.
 - Feed to the tale back into OpenAI for validation and improvements.

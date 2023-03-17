@@ -1,3 +1,8 @@
+variable "aws_region" {
+  type        = string
+  description = "The default region of AWS resources"
+}
+
 variable "openai_api_key" {
   type        = string
   description = "The OpenAI API key"

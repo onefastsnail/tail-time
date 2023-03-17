@@ -20,7 +20,8 @@ func main() {
 	}
 
 	//topic := os.Args[1]
-	topic := "dinosaurs and friendship"
+	//topic := "dinosaurs and friendship"
+	topic := "funny animals"
 
 	tales := tales.New(tales.Config{
 		Source: openai.New(openai.Config{
