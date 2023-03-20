@@ -1,3 +1,8 @@
+variable "project_name" {
+  type        = string
+  description = "The name of the project, used for prefixes, naming etc"
+}
+
 variable "aws_region" {
   type        = string
   description = "The default region of AWS resources"

@@ -1,5 +1,5 @@
 locals {
-  project               = "tail-time"
+  project               = var.project_name
   generate_src_path     = "../../cmd/${local.project}-lambda-generate"
   generate_binary_path  = "./dist/bin/${local.project}-generate"
   generate_binary_name  = "${local.project}-generate"
