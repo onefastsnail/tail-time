@@ -21,7 +21,7 @@ However, the implemented and deployed microservice architecture does provide adv
 - Increased resilience should one part of the pipeline fail.
 - Easier testing, debugging and local development.
 - Faster and easier future development / maintenance.
-- Single responsibilities of the service implementations. 
+- Single and clear responsibilities of the service implementations. 
 - Improved scalability should that time ever come.
 
 All services are written in [Go](https://go.dev/).
@@ -36,12 +36,11 @@ Coming soon.
 
 Many things in the roadmap but here are a few:
 
+- Allow the pipeline to be invoked by an Alexa custom skill.
 - Get creative with the topics, maybe use OpenAI to get those.
 - Experiment and explore different prompts and models. 
-  - Many of the updated models are often inaccessible due to traffic.
-- Feed to the tale back into OpenAI for validation and improvements.
+- Feed the tale back into OpenAI for validation and improvements.
 - Build a larger tale consisting of chapters covering various topics.
-- Allow the pipeline to be invoked by an Alexa custom skill.
 - Present tales generated to the public for access and usage.
-- Augment the tale with generated imaginary 
-- Present the tale in prettier formats ie PDFs
+- Augment the tale with generated imaginary.
+- Present the tale in prettier formats ie PDFs.

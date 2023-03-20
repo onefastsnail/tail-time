@@ -17,3 +17,8 @@ variable "email_destination" {
   type        = string
   description = "The email of where to send your tales"
 }
+
+variable "default_tale_topic" {
+  type        = string
+  description = "Default topic of tales"
+}

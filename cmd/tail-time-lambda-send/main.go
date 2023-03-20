@@ -17,7 +17,8 @@ func HandleRequest(ctx context.Context, event events.S3Event) (string, error) {
 	for _, record := range event.Records {
 		tales := tales.New(tales.Config{
 			Source: s3.New(s3.Config{
-				Event: record,
+				Region: os.Getenv("SOURCE_BUCKET_REGION"),
+				Event:  record,
 			}),
 			Destination: email.New(email.Config{
 				Recipient: os.Getenv("EMAIL_DESTINATION"),
@@ -26,7 +27,7 @@ func HandleRequest(ctx context.Context, event events.S3Event) (string, error) {
 
 		err := tales.Run(ctx)
 		if err != nil {
-			log.Fatalf("Failed to run: %e", err)
+			log.Fatalf("Failed to run: %v", err)
 		}
 	}
 

@@ -14,7 +14,9 @@ import (
 )
 
 func HandleRequest(ctx context.Context, event interface{}) (string, error) {
-	topic := "dinosaurs and cars" // TODO get from event, Alexa event maybe?
+	log.Print(event)
+	// TODO get from event, Alexa as a source?
+	topic := "anything"
 
 	tales := tales.New(tales.Config{
 		Source: openai.New(openai.Config{
@@ -26,6 +28,7 @@ func HandleRequest(ctx context.Context, event interface{}) (string, error) {
 			}),
 		}),
 		Destination: s3.New(s3.Config{
+			Region:     os.Getenv("DESTINATION_BUCKET_REGION"),
 			BucketName: os.Getenv("DESTINATION_BUCKET_NAME"),
 			Path:       "raw",
 		}),
@@ -33,7 +36,7 @@ func HandleRequest(ctx context.Context, event interface{}) (string, error) {
 
 	err := tales.Run(ctx)
 	if err != nil {
-		log.Fatalf("Failed to run: %e", err)
+		log.Fatalf("Failed to run: %v", err)
 	}
 
 	return "OK", nil

@@ -15,7 +15,8 @@ import (
 )
 
 type Config struct {
-	Event events.S3EventRecord
+	Region string
+	Event  events.S3EventRecord
 }
 
 type S3 struct {
@@ -33,7 +34,7 @@ func (s S3) Generate(ctx context.Context) (tale.Tale, error) {
 	}
 
 	client := s3.NewFromConfig(cfg, func(o *s3.Options) {
-		o.Region = "eu-central-1"
+		o.Region = s.config.Region
 	})
 
 	result, err := client.GetObject(ctx, &s3.GetObjectInput{

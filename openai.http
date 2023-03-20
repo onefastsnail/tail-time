@@ -2,7 +2,6 @@
 GET https://api.openai.com/v1/models
 Authorization: Bearer {{openaiToken}}
 
-
 ### text-davinci-003
 POST https://api.openai.com/v1/completions
 Authorization: Bearer {{openaiToken}}

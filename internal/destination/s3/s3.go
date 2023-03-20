@@ -15,6 +15,7 @@ import (
 )
 
 type Config struct {
+	Region     string
 	BucketName string
 	Path       string
 }
@@ -34,14 +35,14 @@ func (s S3) Save(tale tale.Tale) error {
 	}
 
 	client := s3.NewFromConfig(cfg, func(o *s3.Options) {
-		o.Region = "eu-central-1"
+		o.Region = s.config.Region
 	})
 
 	objectKey := fmt.Sprintf("%s/%s.json", s.config.Path, uuid.New().String())
 
 	t, err := json.Marshal(tale)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to marshal tale: %w", err)
 	}
 
 	_, err = client.PutObject(context.TODO(), &s3.PutObjectInput{

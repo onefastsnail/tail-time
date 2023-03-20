@@ -77,6 +77,7 @@ resource "aws_lambda_function" "generate_app" {
     variables = {
       OPENAI_API_KEY          = var.openai_api_key
       DESTINATION_BUCKET_NAME = aws_s3_bucket.tales.id
+      DESTINATION_BUCKET_REGION = aws_s3_bucket.tales.region
     }
   }
 }
@@ -132,6 +133,7 @@ resource "aws_cloudwatch_event_rule" "every_day" {
 resource "aws_cloudwatch_event_target" "every_day" {
   rule = aws_cloudwatch_event_rule.every_day.name
   arn  = aws_lambda_function.generate_app.arn
+  input = jsonencode({topic: var.default_tale_topic})
 }
 
 resource "aws_lambda_permission" "allow_cloudwatch_to_call_generate" {
@@ -181,6 +183,7 @@ resource "aws_lambda_function" "send_app" {
   environment {
     variables = {
       EMAIL_DESTINATION = var.email_destination
+      SOURCE_BUCKET_REGION = aws_s3_bucket.tales.region
     }
   }
 }

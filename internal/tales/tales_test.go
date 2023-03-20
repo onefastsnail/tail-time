@@ -65,7 +65,7 @@ func (s *TalesSuite) TestSource_Fails() {
 	err := tales.Run(context.TODO())
 
 	// Then: An error from the source
-	s.Equal("failed to generate tale: oops", err.Error())
+	s.Equal("failed to generate tale from source: oops", err.Error())
 }
 
 func (s *TalesSuite) TestDestination_Fails() {

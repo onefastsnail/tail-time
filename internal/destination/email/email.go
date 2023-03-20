@@ -72,7 +72,7 @@ func (s Email) Save(tale tale.Tale) error {
 	var emailRaw bytes.Buffer
 	_, err = m.WriteTo(&emailRaw)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to dump message into writer: %w", err)
 	}
 
 	input := &ses.SendRawEmailInput{

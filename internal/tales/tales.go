@@ -27,7 +27,7 @@ func New(config Config) *Tales {
 func (t Tales) Run(ctx context.Context) error {
 	tale, err := t.Source.Generate(ctx)
 	if err != nil {
-		return fmt.Errorf("failed to generate tale: %w", err)
+		return fmt.Errorf("failed to generate tale from source: %w", err)
 	}
 
 	err = t.Destination.Save(tale)
