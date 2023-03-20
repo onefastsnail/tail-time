@@ -30,7 +30,25 @@ The infrastructure is provisioned with [Terraform](https://www.terraform.io/) an
 
 ## Development
 
-Coming soon.
+### Prerequisites
+
+- Install [Go 1.19](https://go.dev/doc/install)
+
+### Setup the environment
+
+Copy and configure `.env.sample` to `.env`. It will be read at run time by the Go code.
+
+### Install dependencies
+
+`go mod download` to download all the Go dependencies.
+
+### Run local version
+
+`go run cmd/tail-time/main.go` to run a local version which currently writes to S3 and triggers the pipeline.
+
+### Deployment
+
+See the [Terraform documentation](./infra/terraform/README.md).
 
 ## Up next...
 

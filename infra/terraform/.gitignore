@@ -3,3 +3,4 @@
 dist
 terraform.tfstate
 terraform.tfstate.backup
+*.tfplan

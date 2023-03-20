@@ -2,9 +2,13 @@
 
 ## Setup
 
-An account per environment
+An account per environment.
 
-### 1. Setup CI user
+## Prerequisites
+
+- Install [Terraform](https://developer.hashicorp.com/terraform/downloads)
+
+### 1. Setup AWS CI user and permissions
 
 - Setup CI user group
 - Setup CI user in CI user group
@@ -23,7 +27,6 @@ An account per environment
         "s3:*",
         "logs:*",
         "iam:*",
-        "cloudfront:*",
         "cloudwatch:*",
         "kms:*",
         "lambda:*"
@@ -33,3 +36,14 @@ An account per environment
   ]
 }
 ```
+
+### 2. Setup the environment
+
+Copy and configure `.env.sample` to `.env` and use it.
+
+### 3. Terraform
+
+- `terraform workspace select dev` to activate a workspace per environment.   
+- `terraform init` to install all needed Terraform dependencies.
+- `terraform plan -out=infra.tfplan` to plan what will be provisioned.
+- `terraform apply infra.tfplan` to apply the plan created which compiles and deploys the apps and infra.
