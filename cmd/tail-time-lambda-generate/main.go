@@ -13,14 +13,18 @@ import (
 	"tail-time/internal/tales"
 )
 
-func HandleRequest(ctx context.Context, event interface{}) (string, error) {
+type customEvent = map[string]string
+
+// TODO get from an Alexa event
+
+func HandleRequest(ctx context.Context, event customEvent) (string, error) {
 	log.Print(event)
-	// TODO get from event, Alexa as a source?
-	topic := "anything"
+
+	log.Printf("Creating tale about [%s]", event["topic"])
 
 	tales := tales.New(tales.Config{
 		Source: openai.New(openai.Config{
-			Topic:    topic,
+			Topic:    event["topic"],
 			Language: "English",
 			Client: oai.New(oai.Config{
 				APIKey:  os.Getenv("OPENAI_API_KEY"),

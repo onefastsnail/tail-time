@@ -1,4 +1,4 @@
-# T~~ai~~l time [![CI](https://github.com/onefastsnail/tail-time/actions/workflows/ci.yml/badge.svg)](https://github.com/onefastsnail/tail-time/actions/workflows/ci.yml)
+# :books: T~~ai~~l time [![CI](https://github.com/onefastsnail/tail-time/actions/workflows/ci.yml/badge.svg)](https://github.com/onefastsnail/tail-time/actions/workflows/ci.yml)
 
 A fun wee project that creates bedtime tales using [OpenAI](https://openai.com/) and sends those tales onwards to one's reading device, for example a Kindle via email.
 
@@ -8,7 +8,7 @@ I plan to make this into a usable service that would publish the generated tales
 
 ## Background
 
-I love reading to my kids. I love technology. I had an idea to mix these two together and had some fun.
+I love reading to my kids. I love technology. I had an idea to mix these two together and have some fun.
 
 ## Architecture
 
