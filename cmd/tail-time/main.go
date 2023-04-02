@@ -7,7 +7,7 @@ import (
 
 	"github.com/joho/godotenv"
 
-	"tail-time/internal/destination/s3"
+	"tail-time/internal/destination"
 	oai "tail-time/internal/openai"
 	"tail-time/internal/source/openai"
 	"tail-time/internal/tales"
@@ -33,13 +33,13 @@ func main() {
 			}),
 		}),
 		//Source: dummy.New(dummy.Config{Topic: topic}),
-		//Destination: destination.Log{},
+		Destination: destination.Log{},
 		//Destination: email.New(email.Config{Recipient: os.Getenv("EMAIL_DESTINATION")}),
-		Destination: s3.New(s3.Config{
-			Region:     os.Getenv("DESTINATION_BUCKET_REGION"),
-			BucketName: os.Getenv("DESTINATION_BUCKET_NAME"),
-			Path:       "raw",
-		}),
+		//Destination: s3.New(s3.Config{
+		//	Region:     os.Getenv("DESTINATION_BUCKET_REGION"),
+		//	BucketName: os.Getenv("DESTINATION_BUCKET_NAME"),
+		//	Path:       "raw",
+		//}),
 	})
 
 	err = tales.Run(context.TODO())

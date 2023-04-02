@@ -5,6 +5,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"regexp"
 	"strings"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -28,8 +29,14 @@ func New(config Config) *Email {
 	return &Email{config: config}
 }
 
+var re = regexp.MustCompile("[^a-z0-9]+")
+
+func slugify(s string) string {
+	return strings.Trim(re.ReplaceAllString(strings.ToLower(s), "-"), "-")
+}
+
 func writeTaleToDisk(tale tale.Tale) (string, error) {
-	slugifyTitle := strings.ReplaceAll(tale.Title, " ", "-")
+	slugifyTitle := slugify(tale.Title)
 
 	fileName := fmt.Sprintf("/tmp/%s-%s.txt", slugifyTitle, tale.CreatedAt.Format("01-02-2006"))
 
