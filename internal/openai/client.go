@@ -16,7 +16,9 @@ type CompletionPrompt struct {
 }
 
 type CompletionPromptResponseChoice struct {
-	Text string `json:"text"`
+	Text         string `json:"text"`
+	FinishReason string `json:"finish_reason"`
+	Index        string `json:"index"`
 }
 
 type CompletionPromptResponse struct {
@@ -28,6 +30,38 @@ type CompletionPromptResponse struct {
 		CompletionTokens int `json:"completion_tokens"`
 		TotalTokens      int `json:"total_tokens"`
 	}
+}
+
+type ChatCompletionPrompt struct {
+	Model       string                        `json:"model"`
+	Messages    []ChatCompletionPromptMessage `json:"messages"`
+	Temperature int                           `json:"temperature"`
+	MaxTokens   int                           `json:"max_tokens"`
+}
+
+type ChatCompletionPromptMessage struct {
+	Role    string `json:"role"`
+	Content string `json:"content"`
+}
+
+type ChatCompletionPromptChoice struct {
+	Index        int                         `json:"index"`
+	Message      ChatCompletionPromptMessage `json:"message"`
+	FinishReason string                      `json:"finish_reason"`
+}
+
+type ChatCompletionPromptUsage struct {
+	PromptTokens     int `json:"prompt_tokens"`
+	CompletionTokens int `json:"completion_tokens"`
+	TotalTokens      int `json:"total_tokens"`
+}
+
+type ChatCompletionPromptResponse struct {
+	ID      string                       `json:"id"`
+	Object  string                       `json:"object"`
+	Created int                          `json:"created"`
+	Choices []ChatCompletionPromptChoice `json:"choices"`
+	Usage   ChatCompletionPromptUsage    `json:"usage"`
 }
 
 type Config struct {
@@ -69,6 +103,37 @@ func (client *Client) Completion(ctx context.Context, prompt CompletionPrompt) (
 	}
 
 	var promptResponse CompletionPromptResponse
+	err = json.NewDecoder(res.Body).Decode(&promptResponse)
+	if err != nil {
+		return nil, fmt.Errorf("failed to deserialize response: %w", err)
+	}
+
+	return &promptResponse, nil
+}
+
+func (client *Client) ChatCompletion(ctx context.Context, prompt ChatCompletionPrompt) (*ChatCompletionPromptResponse, error) {
+	payload := new(bytes.Buffer)
+
+	err := json.NewEncoder(payload).Encode(prompt)
+	if err != nil {
+		return nil, fmt.Errorf("failed to serialize prompt: %w", err)
+	}
+
+	url := fmt.Sprintf("%s/v1/chat/completions", client.config.BaseURL)
+
+	req, err := http.NewRequestWithContext(ctx, "POST", url, payload)
+	if err != nil {
+		return nil, fmt.Errorf("failed to build http request: %w", err)
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", client.config.APIKey))
+	res, err := client.config.HTTPClient.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("failed to do http request: %w", err)
+	}
+
+	var promptResponse ChatCompletionPromptResponse
 	err = json.NewDecoder(res.Body).Decode(&promptResponse)
 	if err != nil {
 		return nil, fmt.Errorf("failed to deserialize response: %w", err)

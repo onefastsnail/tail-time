@@ -9,7 +9,7 @@ Content-Type: application/json
 
 {
 "model": "text-davinci-003",
-"prompt": "Write an exciting 1000 word story for young children about dinosaurs in English. And a title for this story.",
+"prompt": "Write an exciting 1000 word story for young children about dinosaurs in English. And a title for this story separately.",
 "max_tokens": 4000,
 "temperature": 1
 }
@@ -21,5 +21,34 @@ Content-Type: application/json
 
 {
   "model": "gpt-3.5-turbo",
-  "messages": [{"role": "user", "content": "Write an exciting 1000 word story for young children about dinosaurs in English. And a title for this story."}]
+  "messages": [
+    {"role": "system", "content": "You are a story writer for young children who writes in English."},
+    {"role": "user", "content": "Give me a title for an exciting story about cars, without quotes"}
+  ]
+}
+
+### gpt-3.5-turbo
+POST https://api.openai.com/v1/chat/completions
+Authorization: Bearer {{openaiToken}}
+Content-Type: application/json
+
+{
+  "model": "gpt-3.5-turbo",
+  "messages": [
+    {"role": "system", "content": "You are a story writer for young children who writes in English."},
+    {"role": "system", "content": "And reply in JSON"},
+    {"role": "user", "content": "Give me a title for an exciting story about anything"}
+  ]
+}
+
+### gpt-3.5-turbo
+POST https://api.openai.com/v1/chat/completions
+Authorization: Bearer {{openaiToken}}
+Content-Type: application/json
+
+{
+  "model": "gpt-3.5-turbo",
+  "messages": [
+    {"role": "user", "content": "Please create a 100 word engaging bedtime story based on the title provided here: [Dino World Adventure: A Timeless Tale of Prehistoric Monsters.]. The story should be age-appropriate and suitable for children, with a clear beginning, middle, and end. The story should capture the reader's imagination and emotions, with characters that are relatable and memorable. The story's theme or moral should be positive and inspiring, teaching children important lessons about kindness, hope, or perseverance."}
+  ]
 }

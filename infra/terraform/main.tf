@@ -25,7 +25,7 @@ resource "aws_s3_bucket_acl" "tales" {
 // SES
 
 resource "aws_ses_email_identity" "email" {
-  email = var.email_sender
+  email = var.email_from
 }
 
 // IAM
@@ -182,7 +182,8 @@ resource "aws_lambda_function" "send_app" {
 
   environment {
     variables = {
-      EMAIL_DESTINATION    = var.email_destination
+      EMAIL_FROM           = var.email_from
+      EMAIL_TO             = var.email_to
       SOURCE_BUCKET_REGION = aws_s3_bucket.tales.region
     }
   }

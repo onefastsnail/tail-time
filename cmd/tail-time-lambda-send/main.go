@@ -21,7 +21,8 @@ func HandleRequest(ctx context.Context, event events.S3Event) (string, error) {
 				Event:  record,
 			}),
 			Destination: email.New(email.Config{
-				Recipient: os.Getenv("EMAIL_DESTINATION"),
+				From: os.Getenv("EMAIL_FROM"),
+				To:   os.Getenv("EMAIL_TO"),
 			}),
 		})
 

@@ -13,12 +13,12 @@ variable "openai_api_key" {
   description = "The OpenAI API key"
 }
 
-variable "email_sender" {
+variable "email_from" {
   type        = string
   description = "The email of where the tales are sent from"
 }
 
-variable "email_destination" {
+variable "email_to" {
   type        = string
   description = "The email of where to send your tales"
 }

@@ -7,7 +7,7 @@ import (
 
 	"github.com/joho/godotenv"
 
-	"tail-time/internal/destination"
+	"tail-time/internal/destination/email"
 	oai "tail-time/internal/openai"
 	"tail-time/internal/source/openai"
 	"tail-time/internal/tales"
@@ -20,8 +20,7 @@ func main() {
 	}
 
 	//topic := os.Args[1]
-	//topic := "dinosaurs and friendship"
-	topic := "a dog, an owl and a rabbit"
+	topic := "anything"
 
 	tales := tales.New(tales.Config{
 		Source: openai.New(openai.Config{
@@ -33,8 +32,8 @@ func main() {
 			}),
 		}),
 		//Source: dummy.New(dummy.Config{Topic: topic}),
-		Destination: destination.Log{},
-		//Destination: email.New(email.Config{Recipient: os.Getenv("EMAIL_DESTINATION")}),
+		//Destination: destination.Log{},
+		Destination: email.New(email.Config{From: os.Getenv("EMAIL_FROM"), To: os.Getenv("EMAIL_TO")}),
 		//Destination: s3.New(s3.Config{
 		//	Region:     os.Getenv("DESTINATION_BUCKET_REGION"),
 		//	BucketName: os.Getenv("DESTINATION_BUCKET_NAME"),
