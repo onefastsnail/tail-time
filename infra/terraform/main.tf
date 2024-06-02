@@ -1,12 +1,12 @@
 locals {
   project               = var.project_name
   generate_src_path     = "../../cmd/${local.project}-lambda-generate"
-  generate_binary_path  = "./dist/bin/${local.project}-generate"
+  generate_binary_path  = "./dist/bin/generate/bootstrap"
   generate_binary_name  = "${local.project}-generate"
   generate_archive_path = "./dist/generate.zip"
 
   send_src_path     = "../../cmd/${local.project}-lambda-send"
-  send_binary_path  = "./dist/bin/${local.project}-send"
+  send_binary_path  = "./dist/bin/send/bootstrap"
   send_binary_name  = "${local.project}-send"
   send_archive_path = "./dist/send.zip"
 }
@@ -14,12 +14,7 @@ locals {
 // S3
 
 resource "aws_s3_bucket" "tales" {
-  bucket = "${local.project}-tales-${terraform.workspace}"
-}
-
-resource "aws_s3_bucket_acl" "tales" {
-  bucket = aws_s3_bucket.tales.id
-  acl    = "private"
+  bucket = "${local.project}-tales-${terraform.workspace}-73d2d65dca41"
 }
 
 // SES
@@ -49,7 +44,7 @@ resource "null_resource" "generate_app_binary" {
   }
 
   provisioner "local-exec" {
-    command = "GOOS=linux GOARCH=amd64 CGO_ENABLED=0 GOFLAGS=-trimpath go build -mod=readonly -ldflags='-s -w' -o ${local.generate_binary_path} ${local.generate_src_path}"
+    command = "GOOS=linux GOARCH=arm64 CGO_ENABLED=0 GOFLAGS=-trimpath go build -mod=readonly -ldflags='-s -w' -o ${local.generate_binary_path} ${local.generate_src_path}"
   }
 }
 
@@ -65,8 +60,9 @@ resource "aws_lambda_function" "generate_app" {
   function_name = "${local.project}-generate"
   description   = "Lambda to generate tales and store in s3"
   role          = aws_iam_role.generate_lambda.arn
-  handler       = local.generate_binary_name
-  runtime       = "go1.x"
+  handler       = "bootstrap"
+  architectures = ["arm64"]
+  runtime       = "provided.al2023"
   memory_size   = 128
   timeout       = 120
 
@@ -83,13 +79,13 @@ resource "aws_lambda_function" "generate_app" {
 }
 
 resource "aws_iam_role" "generate_lambda" {
-  name               = "AssumeGenerateLambdaRole"
+  name               = "AssumeGenerateLambdaRole-${terraform.workspace}"
   description        = "Role for lambda to assume its execution role. Grant the Lambda service principal permission to assume our role"
   assume_role_policy = data.aws_iam_policy_document.assume_lambda_role.json
 }
 
 resource "aws_iam_policy" "generate_lambda" {
-  name        = "Generate-lambda-permissions"
+  name        = "Generate-lambda-permissions-${terraform.workspace}"
   path        = "/"
   description = "For Lambda and what it can access"
 
@@ -152,7 +148,7 @@ resource "null_resource" "send_app_binary" {
   }
 
   provisioner "local-exec" {
-    command = "GOOS=linux GOARCH=amd64 CGO_ENABLED=0 GOFLAGS=-trimpath go build -mod=readonly -ldflags='-s -w' -o ${local.send_binary_path} ${local.send_src_path}"
+    command = "GOOS=linux GOARCH=arm64 CGO_ENABLED=0 GOFLAGS=-trimpath go build -mod=readonly -ldflags='-s -w' -o ${local.send_binary_path} ${local.send_src_path}"
   }
 }
 
@@ -168,8 +164,9 @@ resource "aws_lambda_function" "send_app" {
   function_name = "${local.project}-send"
   description   = "Lambda to send tales from tales being stored in s3"
   role          = aws_iam_role.send_lambda.arn
-  handler       = local.send_binary_name
-  runtime       = "go1.x"
+  handler       = "bootstrap"
+  runtime       = "provided.al2023"
+  architectures = ["arm64"]
   memory_size   = 128
   timeout       = 120
 
@@ -190,13 +187,13 @@ resource "aws_lambda_function" "send_app" {
 }
 
 resource "aws_iam_role" "send_lambda" {
-  name               = "AssumeSendLambdaRole"
+  name               = "AssumeSendLambdaRole-${terraform.workspace}"
   description        = "Role for lambda to assume its execution role. Grant the Lambda service principal permission to assume our role"
   assume_role_policy = data.aws_iam_policy_document.assume_lambda_role.json
 }
 
 resource "aws_iam_policy" "send_lambda" {
-  name        = "Send-lambda-permissions"
+  name        = "Send-lambda-permissions-${terraform.workspace}"
   path        = "/"
   description = "For Lambda and what it can access"
 

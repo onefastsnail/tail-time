@@ -32,7 +32,7 @@ The infrastructure is provisioned with [Terraform](https://www.terraform.io/) an
 
 ### Prerequisites
 
-- Install [Go 1.19](https://go.dev/doc/install)
+- Install [Go 1.22](https://go.dev/doc/install)
 
 ### Setup the environment
 

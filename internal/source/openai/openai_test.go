@@ -21,30 +21,14 @@ func TestOpenAISuite(t *testing.T) {
 }
 
 func (s *openAISuite) TestGenerate_OK() {
-	openAIResponses := map[int]openai.ChatCompletionPromptResponse{
-		1: {
-			Choices: []openai.ChatCompletionPromptChoice{
-				{
-					Message: openai.ChatCompletionPromptMessage{Content: "The Rare Orange Dinosaur"},
-				},
-			},
-		},
-		2: {
-			Choices: []openai.ChatCompletionPromptChoice{
-				{
-					Message: openai.ChatCompletionPromptMessage{Content: "Once upon a time, there was a test..."},
-				},
-			},
-		},
-	}
-
-	responseCounter := 0
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		responseCounter += 1
-
 		w.WriteHeader(200)
 
-		openAIJSONResponse, _ := json.Marshal(openAIResponses[responseCounter])
+		openAIJSONResponse, _ := json.Marshal(openai.ChatCompletionPromptResponse{Choices: []openai.ChatCompletionPromptChoice{
+			{
+				Message: openai.ChatCompletionPromptMessage{Content: `{"title": "The Rare Orange Dinosaur", "content": "Once upon a time, there was a test..."}`},
+			},
+		}})
 
 		_, _ = w.Write(openAIJSONResponse)
 	}))
