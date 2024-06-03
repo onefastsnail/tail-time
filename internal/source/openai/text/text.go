@@ -1,4 +1,4 @@
-package openai
+package text
 
 import (
 	"context"
@@ -16,7 +16,7 @@ type Config struct {
 	Client   *oai.Client
 }
 
-type OpenAI struct {
+type Text struct {
 	config Config
 }
 
@@ -27,11 +27,11 @@ type ChatCompletionPromptStoryResponse struct {
 	Summary  string `json:"summary"`
 }
 
-func New(config Config) *OpenAI {
-	return &OpenAI{config: config}
+func New(config Config) *Text {
+	return &Text{config: config}
 }
 
-func (o OpenAI) Generate(ctx context.Context) (tale.Tale, error) {
+func (o Text) Generate(ctx context.Context) (tale.Tale, error) {
 	// Be careful not to use all your tokens per minute quota!
 
 	storyPrompt := oai.ChatCompletionPrompt{

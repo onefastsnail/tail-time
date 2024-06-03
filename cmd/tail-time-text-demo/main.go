@@ -7,9 +7,10 @@ import (
 
 	"github.com/joho/godotenv"
 
-	"tail-time/internal/destination/email"
+	"tail-time/internal/destination"
 	oai "tail-time/internal/openai"
-	"tail-time/internal/source/openai"
+	"tail-time/internal/source/openai/text"
+	"tail-time/internal/tale"
 	"tail-time/internal/tales"
 )
 
@@ -20,10 +21,10 @@ func main() {
 	}
 
 	//topic := os.Args[1]
-	topic := "anything"
+	topic := "cars, dinosaurs and team work"
 
-	tales := tales.New(tales.Config{
-		Source: openai.New(openai.Config{
+	tales := tales.New[tale.Tale](tales.Config[tale.Tale]{
+		Source: text.New(text.Config{
 			Topic:    topic,
 			Language: "English",
 			Client: oai.New(oai.Config{
@@ -31,10 +32,10 @@ func main() {
 				BaseURL: "https://api.openai.com",
 			}),
 		}),
-		//Source: dummy.New(dummy.Config{Topic: topic}),
-		//Destination: destination.Log{},
-		Destination: email.New(email.Config{From: os.Getenv("EMAIL_FROM"), To: os.Getenv("EMAIL_TO")}),
-		//Destination: s3.New(s3.Config{
+		//Source: dummy.NewText(dummy.AudioConfig{Topic: topic}),
+		Destination: destination.Log[tale.Tale]{},
+		//Destination: email.NewText(email.AudioConfig{From: os.Getenv("EMAIL_FROM"), To: os.Getenv("EMAIL_TO")}),
+		//Destination: s3.NewText(s3.AudioConfig{
 		//	Region:     os.Getenv("DESTINATION_BUCKET_REGION"),
 		//	BucketName: os.Getenv("DESTINATION_BUCKET_NAME"),
 		//	Path:       "raw",

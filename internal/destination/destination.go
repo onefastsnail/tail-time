@@ -2,8 +2,6 @@
 
 package destination
 
-import "tail-time/internal/tale"
-
-type Destination interface {
-	Save(tale tale.Tale) error
+type Destination[T any] interface {
+	Save(tale T) error
 }

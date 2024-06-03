@@ -8,23 +8,23 @@ import (
 	"tail-time/internal/source"
 )
 
-type Config struct {
+type Config[T any] struct {
 	Name        string
-	Source      source.Source
-	Destination destination.Destination
+	Source      source.Source[T]
+	Destination destination.Destination[T]
 }
 
-type Tales struct {
-	Config
+type Tales[T any] struct {
+	Config[T]
 }
 
-func New(config Config) *Tales {
-	return &Tales{
+func New[T any](config Config[T]) *Tales[T] {
+	return &Tales[T]{
 		config,
 	}
 }
 
-func (t Tales) Run(ctx context.Context) error {
+func (t Tales[T]) Run(ctx context.Context) error {
 	tale, err := t.Source.Generate(ctx)
 	if err != nil {
 		return fmt.Errorf("failed to generate tale from source: %w", err)

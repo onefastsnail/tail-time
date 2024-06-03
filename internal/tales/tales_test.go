@@ -36,7 +36,7 @@ func (s *TalesSuite) TestRun_OK() {
 	destination := mockDestination.NewMockDestination(s.ctrl)
 	destination.EXPECT().Save(t).Times(1)
 
-	tales := New(Config{
+	tales := New[tale.Tale](Config[tale.Tale]{
 		Source:      source,
 		Destination: destination,
 	})
@@ -56,7 +56,7 @@ func (s *TalesSuite) TestSource_Fails() {
 	destination := mockDestination.NewMockDestination(s.ctrl)
 	destination.EXPECT().Save(gomock.Any()).Times(0)
 
-	tales := New(Config{
+	tales := New[tale.Tale](Config[tale.Tale]{
 		Source:      source,
 		Destination: destination,
 	})
@@ -77,7 +77,7 @@ func (s *TalesSuite) TestDestination_Fails() {
 	destination := mockDestination.NewMockDestination(s.ctrl)
 	destination.EXPECT().Save(gomock.Any()).Return(errors.New("oops"))
 
-	tales := New(Config{
+	tales := New[tale.Tale](Config[tale.Tale]{
 		Source:      source,
 		Destination: destination,
 	})

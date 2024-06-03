@@ -9,7 +9,8 @@ import (
 
 	"tail-time/internal/destination/s3"
 	oai "tail-time/internal/openai"
-	"tail-time/internal/source/openai"
+	"tail-time/internal/source/openai/text"
+	"tail-time/internal/tale"
 	"tail-time/internal/tales"
 )
 
@@ -22,8 +23,8 @@ func HandleRequest(ctx context.Context, event customEvent) (string, error) {
 
 	log.Printf("Creating tale about [%s]", event["topic"])
 
-	tales := tales.New(tales.Config{
-		Source: openai.New(openai.Config{
+	tales := tales.New[tale.Tale](tales.Config[tale.Tale]{
+		Source: text.New(text.Config{
 			Topic:    event["topic"],
 			Language: "English",
 			Client: oai.New(oai.Config{

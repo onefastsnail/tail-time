@@ -4,10 +4,8 @@ package source
 
 import (
 	"context"
-
-	"tail-time/internal/tale"
 )
 
-type Source interface {
-	Generate(ctx context.Context) (tale.Tale, error)
+type Source[T any] interface {
+	Generate(ctx context.Context) (T, error)
 }

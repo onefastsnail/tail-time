@@ -2,13 +2,18 @@ locals {
   project               = var.project_name
   generate_src_path     = "../../cmd/${local.project}-lambda-generate"
   generate_binary_path  = "./dist/bin/generate/bootstrap"
-  generate_binary_name  = "${local.project}-generate"
   generate_archive_path = "./dist/generate.zip"
 
   send_src_path     = "../../cmd/${local.project}-lambda-send"
   send_binary_path  = "./dist/bin/send/bootstrap"
-  send_binary_name  = "${local.project}-send"
   send_archive_path = "./dist/send.zip"
+
+  generate_audio_src_path     = "../../cmd/${local.project}-lambda-generate-audio"
+  generate_audio_binary_path  = "./dist/bin/generate-audio/bootstrap"
+  generate_audio_archive_path = "./dist/generate-audio.zip"
+
+  #   alwaysDeployGo = timestamp()
+  alwaysDeployGo = 1
 }
 
 // S3
@@ -40,7 +45,7 @@ data "aws_iam_policy_document" "assume_lambda_role" {
 
 resource "null_resource" "generate_app_binary" {
   triggers = {
-    always_run = timestamp() // TODO fix this
+    always_run = local.alwaysDeployGo
   }
 
   provisioner "local-exec" {
@@ -117,6 +122,89 @@ resource "aws_iam_role_policy_attachment" "generate_lambda" {
   policy_arn = aws_iam_policy.generate_lambda.arn
 }
 
+// Lambda to generate tale audio
+// TODO make Lambda module
+
+resource "null_resource" "generate_audio_app_binary" {
+  triggers = {
+    always_run = local.alwaysDeployGo
+  }
+
+  provisioner "local-exec" {
+    command = "GOOS=linux GOARCH=arm64 CGO_ENABLED=0 GOFLAGS=-trimpath go build -mod=readonly -ldflags='-s -w' -o ${local.generate_audio_binary_path} ${local.generate_audio_src_path}"
+  }
+}
+
+data "archive_file" "generate_audio_app_archive" {
+  depends_on = [null_resource.generate_audio_app_binary]
+
+  type        = "zip"
+  source_file = local.generate_audio_binary_path
+  output_path = local.generate_audio_archive_path
+}
+
+resource "aws_lambda_function" "generate_audio_app" {
+  function_name = "${local.project}-generate-audio"
+  description   = "Lambda to generate tale audio and store in s3"
+  role          = aws_iam_role.generate_audio_lambda.arn
+  handler       = "bootstrap"
+  architectures = ["arm64"]
+  runtime       = "provided.al2023"
+  memory_size   = 128
+  timeout       = 240
+
+  filename         = local.generate_audio_archive_path
+  source_code_hash = data.archive_file.generate_audio_app_archive.output_base64sha256
+
+  environment {
+    variables = {
+      OPENAI_API_KEY            = var.openai_api_key
+      DESTINATION_BUCKET_NAME   = aws_s3_bucket.tales.id
+      DESTINATION_BUCKET_REGION = aws_s3_bucket.tales.region
+    }
+  }
+}
+
+resource "aws_iam_role" "generate_audio_lambda" {
+  name               = "AssumeGenerateAudioLambdaRole-${terraform.workspace}"
+  description        = "Role for lambda to assume its execution role. Grant the Lambda service principal permission to assume our role"
+  assume_role_policy = data.aws_iam_policy_document.assume_lambda_role.json
+}
+
+resource "aws_iam_policy" "generate_audio_lambda" {
+  name        = "Generate-audio-lambda-permissions-${terraform.workspace}"
+  path        = "/"
+  description = "For Lambda and what it can access"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = [
+          "logs:CreateLogGroup",
+          "logs:CreateLogStream",
+          "logs:PutLogEvents",
+        ]
+        Effect   = "Allow"
+        Resource = "arn:aws:logs:*:*:*"
+      },
+      {
+        Action = [
+          "s3:PutObject",
+          "s3:GetObject",
+        ]
+        Effect   = "Allow"
+        Resource = "${aws_s3_bucket.tales.arn}/*"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "generate_audio_lambda" {
+  role       = aws_iam_role.generate_audio_lambda.name
+  policy_arn = aws_iam_policy.generate_audio_lambda.arn
+}
+
 
 // Scheduled trigger
 
@@ -144,7 +232,7 @@ resource "aws_lambda_permission" "allow_cloudwatch_to_call_generate" {
 
 resource "null_resource" "send_app_binary" {
   triggers = {
-    always_run = timestamp() // TODO fix this
+    always_run = local.alwaysDeployGo
   }
 
   provisioner "local-exec" {
@@ -243,13 +331,31 @@ resource "aws_lambda_permission" "with_s3" {
   source_arn    = aws_s3_bucket.tales.arn
 }
 
-resource "aws_s3_bucket_notification" "send" {
-  bucket = aws_s3_bucket.tales.id
+// Routing
 
-  lambda_function {
-    lambda_function_arn = aws_lambda_function.send_app.arn
-    events              = ["s3:ObjectCreated:*"]
-    filter_prefix       = "raw/"
-    filter_suffix       = ".json"
-  }
+resource "aws_cloudwatch_event_rule" "tale_text_created_event_rule" {
+  name = "text-created-${terraform.workspace}"
+  event_pattern = jsonencode({
+    source : ["aws.s3"],
+    detail-type : ["Object Created"],
+    "detail" : {
+      "bucket" : {
+        "name" : [aws_s3_bucket.tales.id]
+      },
+      #       "object" : {
+      #         "key" : [{ "prefix" : "raw/" }]
+      #       }
+    }
+  })
+}
+
+resource "aws_cloudwatch_event_target" "send_text_email" {
+  rule      = aws_cloudwatch_event_rule.tale_text_created_event_rule.name
+  target_id = "send-text-email"
+  arn       = aws_lambda_function.send_app.arn
+}
+
+resource "aws_s3_bucket_notification" "notify_event_bus" {
+  bucket      = aws_s3_bucket.tales.id
+  eventbridge = true
 }

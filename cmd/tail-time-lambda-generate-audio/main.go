@@ -8,23 +8,23 @@ import (
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 
-	"tail-time/internal/destination/email"
-	"tail-time/internal/source/s3"
-	"tail-time/internal/tale"
+	"tail-time/internal/destination"
+	oai "tail-time/internal/openai"
+	"tail-time/internal/source/openai/audio"
 	"tail-time/internal/tales"
 )
 
 func HandleRequest(ctx context.Context, event events.S3Event) (string, error) {
 	for _, record := range event.Records {
-		tales := tales.New[tale.Tale](tales.Config[tale.Tale]{
-			Source: s3.New(s3.Config{
-				Region: os.Getenv("SOURCE_BUCKET_REGION"),
-				Event:  record,
+		tales := tales.New[string](tales.Config[string]{
+			Source: audio.New(audio.Config{
+				Event: record,
+				Client: oai.New(oai.Config{
+					APIKey:  os.Getenv("OPENAI_API_KEY"),
+					BaseURL: "https://api.openai.com",
+				}),
 			}),
-			Destination: email.New(email.Config{
-				From: os.Getenv("EMAIL_FROM"),
-				To:   os.Getenv("EMAIL_TO"),
-			}),
+			Destination: destination.Log[string]{},
 		})
 
 		err := tales.Run(ctx)
