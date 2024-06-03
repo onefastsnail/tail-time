@@ -21,8 +21,10 @@ type OpenAI struct {
 }
 
 type ChatCompletionPromptStoryResponse struct {
-	Title   string `json:"title"`
-	Content string `json:"content"`
+	Title    string `json:"title"`
+	Content  string `json:"content"`
+	Category string `json:"category"`
+	Summary  string `json:"summary"`
 }
 
 func New(config Config) *OpenAI {
@@ -37,10 +39,11 @@ func (o OpenAI) Generate(ctx context.Context) (tale.Tale, error) {
 		Messages: []oai.ChatCompletionPromptMessage{
 			{Role: "system", Content: fmt.Sprintf("You are a story writer for young children who writes in %s", o.config.Language)},
 			{Role: "system", Content: "Your stories should be age-appropriate and suitable for children, with a clear beginning, middle, and end. The story should capture the reader's imagination and emotions, with characters that are relatable and memorable. The story's theme or moral should be positive and inspiring, teaching children important lessons about kindness, hope, team work or perseverance."},
-			{Role: "system", Content: `You only reply in JSON. The JSON format of your reply should be: {"title": "Story Title", "content": "Story content goes here."}.`},
-			{Role: "user", Content: fmt.Sprintf("Write an exciting story about %s", o.config.Topic)},
+			{Role: "system", Content: "Also provide a category and a one line summary about your stories."},
+			{Role: "system", Content: `You only reply in JSON. The JSON format of your reply should be: {"title": "Story Title", "content": "Story content goes here.", "category": "Category of the story", "summary": "Summary of the story"}.`},
+			{Role: "user", Content: fmt.Sprintf("Write a 1000 word story about %s", o.config.Topic)},
 		},
-		MaxTokens:   500,
+		MaxTokens:   1200,
 		Temperature: 1,
 	}
 
@@ -59,6 +62,8 @@ func (o OpenAI) Generate(ctx context.Context) (tale.Tale, error) {
 		Topic:     o.config.Topic,
 		Title:     promptResponse.Title,
 		Text:      promptResponse.Content,
+		Category:  promptResponse.Category,
+		Summary:   promptResponse.Summary,
 		Language:  o.config.Language,
 		CreatedAt: time.Now(),
 	}, nil
