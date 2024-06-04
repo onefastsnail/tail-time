@@ -342,9 +342,9 @@ resource "aws_cloudwatch_event_rule" "tale_text_created_event_rule" {
       "bucket" : {
         "name" : [aws_s3_bucket.tales.id]
       },
-      #       "object" : {
-      #         "key" : [{ "prefix" : "raw/" }]
-      #       }
+      "object" : {
+        "key" : [{ "prefix" : "raw/" }]
+      }
     }
   })
 }
@@ -353,6 +353,26 @@ resource "aws_cloudwatch_event_target" "send_text_email" {
   rule      = aws_cloudwatch_event_rule.tale_text_created_event_rule.name
   target_id = "send-text-email"
   arn       = aws_lambda_function.send_app.arn
+}
+
+resource "aws_cloudwatch_event_target" "generate_audio_email" {
+  rule      = aws_cloudwatch_event_rule.tale_text_created_event_rule.name
+  target_id = "generate-audio-email"
+  arn       = aws_lambda_function.generate_audio_app.arn
+}
+
+resource "aws_lambda_permission" "send_text_email_permission" {
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.send_app.function_name
+  principal     = "events.amazonaws.com"
+  source_arn    = aws_cloudwatch_event_rule.tale_text_created_event_rule.arn
+}
+
+resource "aws_lambda_permission" "generate_audio_permission" {
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.generate_audio_app.function_name
+  principal     = "events.amazonaws.com"
+  source_arn    = aws_cloudwatch_event_rule.tale_text_created_event_rule.arn
 }
 
 resource "aws_s3_bucket_notification" "notify_event_bus" {
