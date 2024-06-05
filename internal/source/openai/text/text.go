@@ -37,11 +37,11 @@ func (o Text) Generate(ctx context.Context) (tale.Tale, error) {
 	storyPrompt := oai.ChatCompletionPrompt{
 		Model: "gpt-3.5-turbo",
 		Messages: []oai.ChatCompletionPromptMessage{
-			{Role: "system", Content: fmt.Sprintf("You are a story writer for young children who writes in %s", o.config.Language)},
+			{Role: "system", Content: "You are a story writer for young children"},
 			{Role: "system", Content: "Your stories should be age-appropriate and suitable for children, with a clear beginning, middle, and end. The story should capture the reader's imagination and emotions, with characters that are relatable and memorable. The story's theme or moral should be positive and inspiring, teaching children important lessons about kindness, hope, team work or perseverance."},
 			{Role: "system", Content: "Also provide a category and a one line summary about your stories."},
 			{Role: "system", Content: `You only reply in JSON. The JSON format of your reply should be: {"title": "Story Title", "content": "Story content goes here.", "category": "Category of the story", "summary": "Summary of the story"}.`},
-			{Role: "user", Content: fmt.Sprintf("Write a 1000 word story about %s", o.config.Topic)},
+			{Role: "user", Content: fmt.Sprintf("Write a 1000 word story in %s about %s", o.config.Language, o.config.Topic)},
 		},
 		MaxTokens:   1200,
 		Temperature: 1,

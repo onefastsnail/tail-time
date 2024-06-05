@@ -23,7 +23,7 @@ func HandleRequest(ctx context.Context, event customEvent) (string, error) {
 
 	log.Printf("Creating tale about [%s]", event["topic"])
 
-	tales := tales.New[tale.Tale](tales.Config[tale.Tale]{
+	talesWorkload := tales.New[tale.Tale](tales.Config[tale.Tale]{
 		Source: text.New(text.Config{
 			Topic:    event["topic"],
 			Language: "English",
@@ -39,7 +39,7 @@ func HandleRequest(ctx context.Context, event customEvent) (string, error) {
 		}),
 	})
 
-	err := tales.Run(ctx)
+	err := talesWorkload.Run(ctx)
 	if err != nil {
 		log.Fatalf("Failed to run: %v", err)
 	}

@@ -2,38 +2,42 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"log"
 	"os"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 
+	"tail-time/internal/aws"
 	"tail-time/internal/destination/email"
 	"tail-time/internal/source/s3"
 	"tail-time/internal/tale"
 	"tail-time/internal/tales"
 )
 
-func HandleRequest(ctx context.Context, event events.S3Event) (string, error) {
-	for _, record := range event.Records {
-		tales := tales.New[tale.Tale](tales.Config[tale.Tale]{
-			Source: s3.New(s3.Config{
-				Region: os.Getenv("SOURCE_BUCKET_REGION"),
-				Event:  record,
-			}),
-			Destination: email.New(email.Config{
-				From: os.Getenv("EMAIL_FROM"),
-				To:   os.Getenv("EMAIL_TO"),
-			}),
-		})
-
-		err := tales.Run(ctx)
-		if err != nil {
-			log.Fatalf("Failed to run: %v", err)
-		}
+func HandleRequest(ctx context.Context, event events.CloudWatchEvent) (string, error) {
+	var record aws.S3EventDetail
+	err := json.Unmarshal(event.Detail, &record)
+	if err != nil {
+		return "fail", err
 	}
 
-	log.Printf("Sent [%d] tales.", len(event.Records))
+	talesWorkload := tales.New[tale.Tale](tales.Config[tale.Tale]{
+		Source: s3.New(s3.Config{
+			Region: os.Getenv("SOURCE_BUCKET_REGION"),
+			Event:  record,
+		}),
+		Destination: email.New(email.Config{
+			From: os.Getenv("EMAIL_FROM"),
+			To:   os.Getenv("EMAIL_TO"),
+		}),
+	})
+
+	err = talesWorkload.Run(ctx)
+	if err != nil {
+		log.Fatalf("Failed to run: %v", err)
+	}
 
 	return "OK", nil
 }

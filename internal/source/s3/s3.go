@@ -6,17 +6,17 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 
+	iaws "tail-time/internal/aws"
 	"tail-time/internal/tale"
 )
 
 type Config struct {
 	Region string
-	Event  events.S3EventRecord
+	Event  iaws.S3EventDetail
 }
 
 type S3 struct {
@@ -38,8 +38,8 @@ func (s S3) Generate(ctx context.Context) (tale.Tale, error) {
 	})
 
 	result, err := client.GetObject(ctx, &s3.GetObjectInput{
-		Bucket: aws.String(s.config.Event.S3.Bucket.Name),
-		Key:    aws.String(s.config.Event.S3.Object.Key),
+		Bucket: aws.String(s.config.Event.Bucket.Name),
+		Key:    aws.String(s.config.Event.Object.Key),
 	})
 	if err != nil {
 		return tale.Tale{}, fmt.Errorf("failed to get object from s3: %w", err)

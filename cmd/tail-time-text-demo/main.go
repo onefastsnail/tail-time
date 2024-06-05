@@ -21,7 +21,7 @@ func main() {
 	}
 
 	//topic := os.Args[1]
-	topic := "cars, dinosaurs and team work"
+	topic := "bikes and forests"
 
 	tales := tales.New[tale.Tale](tales.Config[tale.Tale]{
 		Source: text.New(text.Config{
@@ -34,7 +34,7 @@ func main() {
 		}),
 		//Source: dummy.NewText(dummy.AudioConfig{Topic: topic}),
 		Destination: destination.Log[tale.Tale]{},
-		//Destination: email.NewText(email.AudioConfig{From: os.Getenv("EMAIL_FROM"), To: os.Getenv("EMAIL_TO")}),
+		//Destination: email.New(email.Config{From: os.Getenv("EMAIL_FROM"), To: os.Getenv("EMAIL_TO")}),
 		//Destination: s3.NewText(s3.AudioConfig{
 		//	Region:     os.Getenv("DESTINATION_BUCKET_REGION"),
 		//	BucketName: os.Getenv("DESTINATION_BUCKET_NAME"),

@@ -2,14 +2,14 @@ package audio
 
 import (
 	"context"
+	"fmt"
 
-	"github.com/aws/aws-lambda-go/events"
-
+	"tail-time/internal/aws"
 	oai "tail-time/internal/openai"
 )
 
 type Config struct {
-	Event  events.S3EventRecord
+	Event  aws.S3EventDetail
 	Client *oai.Client
 }
 
@@ -26,5 +26,7 @@ func New(config Config) *Audio {
 }
 
 func (o Audio) Generate(ctx context.Context) (string, error) {
+	fmt.Printf("%+v", o.config.Event)
+	
 	return "test", nil
 }

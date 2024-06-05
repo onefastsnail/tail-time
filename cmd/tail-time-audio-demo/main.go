@@ -5,9 +5,9 @@ import (
 	"log"
 	"os"
 
-	"github.com/aws/aws-lambda-go/events"
 	"github.com/joho/godotenv"
 
+	"tail-time/internal/aws"
 	"tail-time/internal/destination"
 	oai "tail-time/internal/openai"
 	"tail-time/internal/source/openai/audio"
@@ -20,17 +20,7 @@ func main() {
 		log.Fatal("Error loading .env file")
 	}
 
-	record := events.S3EventRecord{
-		S3: events.S3Entity{
-			Bucket: events.S3Bucket{
-				Name: "tales-bucket",
-				Arn:  "",
-			},
-			Object: events.S3Object{
-				Key: "/path/to/tale.json",
-			},
-		},
-	}
+	record := aws.S3EventDetail{}
 
 	tales := tales.New[string](tales.Config[string]{
 		Source: audio.New(audio.Config{
