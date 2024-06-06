@@ -1,8 +1,3 @@
-variable "recompile_go" {
-  type = bool
-  default = false
-}
-
 variable "function_name" {
   type = string
 }

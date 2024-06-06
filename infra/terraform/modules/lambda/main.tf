@@ -11,7 +11,7 @@ data "aws_iam_policy_document" "assume_lambda_role" {
 
 resource "null_resource" "app_binary" {
   triggers = {
-    always_run = var.recompile_go
+    always_run = timestamp()
   }
 
   provisioner "local-exec" {

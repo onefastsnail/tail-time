@@ -7,7 +7,7 @@ import (
 
 	"github.com/aws/aws-lambda-go/lambda"
 
-	"tail-time/internal/destination/s3"
+	"tail-time/internal/destination/s3/json"
 	oai "tail-time/internal/openai"
 	"tail-time/internal/source/openai/text"
 	"tail-time/internal/tale"
@@ -32,7 +32,7 @@ func HandleRequest(ctx context.Context, event customEvent) (string, error) {
 				BaseURL: "https://api.openai.com",
 			}),
 		}),
-		Destination: s3.New(s3.Config{
+		Destination: json.New(json.Config{
 			Region:     os.Getenv("DESTINATION_BUCKET_REGION"),
 			BucketName: os.Getenv("DESTINATION_BUCKET_NAME"),
 			Path:       "raw",

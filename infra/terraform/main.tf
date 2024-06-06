@@ -16,7 +16,6 @@ module "generate_tale_text_lambda" {
   source           = "./modules/lambda"
   function_name    = "${var.project_name}-generate-tale-text"
   description      = "To generate tales from OpenAI"
-  recompile_go     = true
   timeout          = 120
   app_src_path     = "../../cmd/${var.project_name}-lambda-generate-text"
   app_binary_path  = "./dist/bin/generate/bootstrap"
@@ -39,7 +38,6 @@ module "send_tale_text_lambda" {
   source           = "./modules/lambda"
   function_name    = "${var.project_name}-send-tale-text-email"
   description      = "To send tales as emails"
-  recompile_go     = true
   timeout          = 120
   app_src_path     = "../../cmd/${var.project_name}-lambda-send-email"
   app_binary_path  = "./dist/bin/send/bootstrap"
@@ -67,7 +65,6 @@ module "generate_tale_audio_lambda" {
   source           = "./modules/lambda"
   function_name    = "${var.project_name}-generate-tale-audio"
   description      = "Generates audio versions of tales"
-  recompile_go     = true
   timeout          = 120
   app_src_path     = "../../cmd/${var.project_name}-lambda-generate-audio"
   app_binary_path  = "./dist/bin/generate-audio/bootstrap"

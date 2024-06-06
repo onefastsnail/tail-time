@@ -3,11 +3,12 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"log"
 	"os"
 
 	"tail-time/internal/aws"
-	"tail-time/internal/destination/localfs"
+	audiod "tail-time/internal/destination/s3/audio"
 	oai "tail-time/internal/openai"
 	"tail-time/internal/source/openai/audio"
 	"tail-time/internal/tales"
@@ -20,7 +21,7 @@ func HandleRequest(ctx context.Context, event events.CloudWatchEvent) (string, e
 	var record aws.S3EventDetail
 	err := json.Unmarshal(event.Detail, &record)
 	if err != nil {
-		return "fail", err
+		return "fail", fmt.Errorf("failed to unmarshal event: %v", err)
 	}
 
 	talesWorkload := tales.New[[]byte](tales.Config[[]byte]{
@@ -31,8 +32,10 @@ func HandleRequest(ctx context.Context, event events.CloudWatchEvent) (string, e
 				BaseURL: "https://api.openai.com",
 			}),
 		}),
-		Destination: localfs.New(localfs.Config{
-			Path: "./test.mpga",
+		Destination: audiod.New(audiod.Config{
+			Region:     os.Getenv("DESTINATION_BUCKET_REGION"),
+			BucketName: os.Getenv("DESTINATION_BUCKET_NAME"),
+			Path:       "audio",
 		}),
 	})
 
