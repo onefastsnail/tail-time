@@ -16,9 +16,9 @@ module "generate_tale_text_lambda" {
   source           = "./modules/lambda"
   function_name    = "${var.project_name}-generate-tale-text"
   description      = "To generate tales from OpenAI"
-  recompile_go     = 3
+  recompile_go     = false
   timeout          = 120
-  app_src_path     = "../../cmd/${var.project_name}-lambda-generate"
+  app_src_path     = "../../cmd/${var.project_name}-lambda-generate-text"
   app_binary_path  = "./dist/bin/generate/bootstrap"
   app_archive_path = "./dist/generate.zip"
   permissions = {
@@ -38,10 +38,10 @@ module "generate_tale_text_lambda" {
 module "send_tale_text_lambda" {
   source           = "./modules/lambda"
   function_name    = "${var.project_name}-send-tale-text-email"
-  description      = "To send tales from tales being stored in S3"
-  recompile_go     = 2
+  description      = "To send tales as emails"
+  recompile_go     = false
   timeout          = 120
-  app_src_path     = "../../cmd/${var.project_name}-lambda-send"
+  app_src_path     = "../../cmd/${var.project_name}-lambda-send-email"
   app_binary_path  = "./dist/bin/send/bootstrap"
   app_archive_path = "./dist/send.zip"
   permissions = {
@@ -66,8 +66,8 @@ module "send_tale_text_lambda" {
 module "generate_tale_audio_lambda" {
   source           = "./modules/lambda"
   function_name    = "${var.project_name}-generate-tale-audio"
-  description      = "To generate audio files of tales"
-  recompile_go     = 2
+  description      = "Generates audio versions of tales"
+  recompile_go     = false
   timeout          = 120
   app_src_path     = "../../cmd/${var.project_name}-lambda-generate-audio"
   app_binary_path  = "./dist/bin/generate-audio/bootstrap"

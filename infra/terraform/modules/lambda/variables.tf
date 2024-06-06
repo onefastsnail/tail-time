@@ -1,6 +1,6 @@
 variable "recompile_go" {
-  type = number
-  default = 1
+  type = bool
+  default = false
 }
 
 variable "function_name" {

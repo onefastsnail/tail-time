@@ -1,22 +1,22 @@
 # :books: T~~ai~~l time [![CI](https://github.com/onefastsnail/tail-time/actions/workflows/ci.yml/badge.svg)](https://github.com/onefastsnail/tail-time/actions/workflows/ci.yml)
 
-A fun wee project that creates bedtime tales using [OpenAI](https://openai.com/) and sends those tales onwards to one's reading device, for example a Kindle via email.
+A fun wee project that creates bedtime tales using [OpenAI](https://openai.com/) and sends those tales onwards to one's reading device of choice, for example a Kindle via email.
 
-A very much WIP project.
+A very much WIP and hobby project.
 
-I plan to make this into a usable service that would publish the generated tales for all to access, however until that time, this project can easily be forked and modified to fit your own needs. Enjoy!
+I plan to make this into a usable service that would publish the generated tales for all to enjoy, however until that time, this project can easily be forked and modified to fit your own needs.
 
 ## Background
 
-I love reading to my kids. I love technology. I had an idea to mix these two together and have some fun.
+I love reading to my kids. I love technology. Why not mix the two together and have some fun.
 
 ## Architecture
 
-This solution is :100: overkill, and could be done in far simpler ways, even in a single small script, but what would be the fun be in that!
+This solution is :100: overkill, and could be done in far simpler ways, but what would be the fun be in that!
 
 ![architecture.png](docs/architecture.png)
  
-However, the implemented and deployed microservice architecture does provide advantages over its monolith counterpart such as:
+However, the implemented and deployed microservice architecture does provide advantages over a more monolith counterpart such as:
 
 - Increased resilience should one part of the pipeline fail.
 - Easier testing, debugging and local development.
@@ -44,7 +44,7 @@ Copy and configure `.env.sample` to `.env`. It will be read at run time by the G
 
 ### Run local version
 
-`go run cmd/tail-time/main.go` to run a local version which currently writes to S3 and triggers the pipeline.
+`go run cmd/tail-time-generate-text-demo/main.go` to run a local version which creates a tale and logs it out.
 
 ### Deployment
 
@@ -55,10 +55,7 @@ See the [Terraform documentation](./infra/terraform/README.md).
 Many things in the roadmap but here are a few:
 
 - Allow the pipeline to be invoked by an Alexa custom skill.
-- Get creative with the topics, maybe use OpenAI to get those.
-- Experiment and explore different prompts and models. 
-- Feed the tale back into OpenAI for validation and improvements.
+- Build a prompt flow to validate, improve and augment the tale.  
 - Build a larger tale consisting of chapters covering various topics.
 - Present tales generated to the public for access and usage.
-- Augment the tale with generated imaginary.
-- Present the tale in prettier formats ie PDFs.
+- Augment the tale with imaginary.

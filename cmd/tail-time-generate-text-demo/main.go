@@ -32,10 +32,10 @@ func main() {
 				BaseURL: "https://api.openai.com",
 			}),
 		}),
-		//Source: dummy.NewText(dummy.AudioConfig{Topic: topic}),
+		//Source: dummy.NewText(dummy.Config{Topic: topic}),
 		Destination: destination.Log[tale.Tale]{},
 		//Destination: email.New(email.Config{From: os.Getenv("EMAIL_FROM"), To: os.Getenv("EMAIL_TO")}),
-		//Destination: s3.NewText(s3.AudioConfig{
+		//Destination: s3.NewText(s3.Config{
 		//	Region:     os.Getenv("DESTINATION_BUCKET_REGION"),
 		//	BucketName: os.Getenv("DESTINATION_BUCKET_NAME"),
 		//	Path:       "raw",

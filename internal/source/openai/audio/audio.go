@@ -27,6 +27,6 @@ func New(config Config) *Audio {
 
 func (o Audio) Generate(ctx context.Context) (string, error) {
 	fmt.Printf("%+v", o.config.Event)
-	
+
 	return "test", nil
 }
