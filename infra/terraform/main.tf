@@ -16,7 +16,7 @@ module "generate_tale_text_lambda" {
   source           = "./modules/lambda"
   function_name    = "${var.project_name}-generate-tale-text"
   description      = "To generate tales from OpenAI"
-  recompile_go     = false
+  recompile_go     = true
   timeout          = 120
   app_src_path     = "../../cmd/${var.project_name}-lambda-generate-text"
   app_binary_path  = "./dist/bin/generate/bootstrap"
@@ -39,7 +39,7 @@ module "send_tale_text_lambda" {
   source           = "./modules/lambda"
   function_name    = "${var.project_name}-send-tale-text-email"
   description      = "To send tales as emails"
-  recompile_go     = false
+  recompile_go     = true
   timeout          = 120
   app_src_path     = "../../cmd/${var.project_name}-lambda-send-email"
   app_binary_path  = "./dist/bin/send/bootstrap"
@@ -67,7 +67,7 @@ module "generate_tale_audio_lambda" {
   source           = "./modules/lambda"
   function_name    = "${var.project_name}-generate-tale-audio"
   description      = "Generates audio versions of tales"
-  recompile_go     = false
+  recompile_go     = true
   timeout          = 120
   app_src_path     = "../../cmd/${var.project_name}-lambda-generate-audio"
   app_binary_path  = "./dist/bin/generate-audio/bootstrap"
@@ -138,11 +138,11 @@ resource "aws_cloudwatch_event_target" "send_text_email" {
   arn       = module.send_tale_text_lambda.lambda_function.arn
 }
 
-resource "aws_cloudwatch_event_target" "generate_audio_email" {
-  rule      = aws_cloudwatch_event_rule.tale_text_created_event_rule.name
-  target_id = "generate-audio-email"
-  arn       = module.generate_tale_audio_lambda.lambda_function.arn
-}
+# resource "aws_cloudwatch_event_target" "generate_audio_email" {
+#   rule      = aws_cloudwatch_event_rule.tale_text_created_event_rule.name
+#   target_id = "generate-audio-email"
+#   arn       = module.generate_tale_audio_lambda.lambda_function.arn
+# }
 
 resource "aws_lambda_permission" "send_text_email_permission" {
   action        = "lambda:InvokeFunction"

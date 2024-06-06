@@ -7,7 +7,7 @@ import (
 	"os"
 
 	"tail-time/internal/aws"
-	"tail-time/internal/destination"
+	"tail-time/internal/destination/localfs"
 	oai "tail-time/internal/openai"
 	"tail-time/internal/source/openai/audio"
 	"tail-time/internal/tales"
@@ -23,7 +23,7 @@ func HandleRequest(ctx context.Context, event events.CloudWatchEvent) (string, e
 		return "fail", err
 	}
 
-	talesWorkload := tales.New[string](tales.Config[string]{
+	talesWorkload := tales.New[[]byte](tales.Config[[]byte]{
 		Source: audio.New(audio.Config{
 			Event: record,
 			Client: oai.New(oai.Config{
@@ -31,7 +31,9 @@ func HandleRequest(ctx context.Context, event events.CloudWatchEvent) (string, e
 				BaseURL: "https://api.openai.com",
 			}),
 		}),
-		Destination: destination.Log[string]{},
+		Destination: localfs.New(localfs.Config{
+			Path: "./test.mpga",
+		}),
 	})
 
 	err = talesWorkload.Run(ctx)

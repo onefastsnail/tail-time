@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 )
 
@@ -37,6 +38,12 @@ type ChatCompletionPrompt struct {
 	Messages    []ChatCompletionPromptMessage `json:"messages"`
 	Temperature int                           `json:"temperature"`
 	MaxTokens   int                           `json:"max_tokens"`
+}
+
+type TextToSpeechPrompt struct {
+	Model string `json:"model"`
+	Input string `json:"input"`
+	Voice string `json:"voice"`
 }
 
 type ChatCompletionPromptMessage struct {
@@ -140,4 +147,34 @@ func (client *Client) ChatCompletion(ctx context.Context, prompt ChatCompletionP
 	}
 
 	return &promptResponse, nil
+}
+
+func (client *Client) TextToSpeech(ctx context.Context, prompt TextToSpeechPrompt) ([]byte, error) {
+	payload := new(bytes.Buffer)
+
+	err := json.NewEncoder(payload).Encode(prompt)
+	if err != nil {
+		return nil, fmt.Errorf("failed to serialize prompt: %w", err)
+	}
+
+	url := fmt.Sprintf("%s/v1/audio/speech", client.config.BaseURL)
+
+	req, err := http.NewRequestWithContext(ctx, "POST", url, payload)
+	if err != nil {
+		return nil, fmt.Errorf("failed to build http request: %w", err)
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", client.config.APIKey))
+	res, err := client.config.HTTPClient.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("failed to do http request: %w", err)
+	}
+
+	data, err := io.ReadAll(res.Body)
+	if err != nil {
+		return nil, fmt.Errorf("could not read audio data: %v", err)
+	}
+
+	return data, nil
 }
