@@ -8,7 +8,7 @@ import (
 	"github.com/joho/godotenv"
 
 	"tail-time/internal/destination"
-	oai "tail-time/internal/openai"
+	"tail-time/internal/openai"
 	"tail-time/internal/source/openai/text"
 	"tail-time/internal/tale"
 	"tail-time/internal/tales"
@@ -27,7 +27,7 @@ func main() {
 		Source: text.New(text.Config{
 			Topic:    topic,
 			Language: "English",
-			Client: oai.New(oai.Config{
+			Client: openai.New(openai.Config{
 				APIKey:  os.Getenv("OPENAI_API_KEY"),
 				BaseURL: "https://api.openai.com",
 			}),

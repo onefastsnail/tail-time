@@ -35,6 +35,7 @@ func (s S3) Save(audio []byte) error {
 		o.Region = s.config.Region
 	})
 
+	// TODO: make key same as text counterpart
 	objectKey := fmt.Sprintf("%s/%s.mpga", s.config.Path, uuid.New().String())
 
 	_, err = client.PutObject(context.TODO(), &s3.PutObjectInput{

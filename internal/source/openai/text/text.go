@@ -6,14 +6,14 @@ import (
 	"fmt"
 	"time"
 
-	oai "tail-time/internal/openai"
+	"tail-time/internal/openai"
 	"tail-time/internal/tale"
 )
 
 type Config struct {
 	Topic    string
 	Language string
-	Client   *oai.Client
+	Client   *openai.Client
 }
 
 type Text struct {
@@ -34,9 +34,9 @@ func New(config Config) *Text {
 func (o Text) Generate(ctx context.Context) (tale.Tale, error) {
 	// Be careful not to use all your tokens per minute quota!
 
-	storyPrompt := oai.ChatCompletionPrompt{
+	storyPrompt := openai.ChatCompletionPrompt{
 		Model: "gpt-3.5-turbo",
-		Messages: []oai.ChatCompletionPromptMessage{
+		Messages: []openai.ChatCompletionPromptMessage{
 			{Role: "system", Content: "You are a story writer for young children"},
 			{Role: "system", Content: "Your stories should be age-appropriate and suitable for children, with a clear beginning, middle, and end. The story should capture the reader's imagination and emotions, with characters that are relatable and memorable. The story's theme or moral should be positive and inspiring, teaching children important lessons about kindness, hope, team work or perseverance."},
 			{Role: "system", Content: "Also provide a category and a one line summary about your stories."},

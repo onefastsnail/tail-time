@@ -9,7 +9,7 @@ import (
 
 	"tail-time/internal/aws"
 	"tail-time/internal/destination/localfs"
-	oai "tail-time/internal/openai"
+	"tail-time/internal/openai"
 	"tail-time/internal/source/openai/audio"
 	"tail-time/internal/tales"
 )
@@ -25,7 +25,7 @@ func main() {
 	tales := tales.New[[]byte](tales.Config[[]byte]{
 		Source: audio.New(audio.Config{
 			Event: record,
-			Client: oai.New(oai.Config{
+			OpenAiClient: openai.New(openai.Config{
 				APIKey:  os.Getenv("OPENAI_API_KEY"),
 				BaseURL: "https://api.openai.com",
 			}),

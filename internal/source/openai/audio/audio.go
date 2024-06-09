@@ -2,15 +2,24 @@ package audio
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"io"
+	"log"
 
-	"tail-time/internal/aws"
-	oai "tail-time/internal/openai"
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/service/s3"
+
+	_aws "tail-time/internal/aws"
+	_s3 "tail-time/internal/aws/s3"
+	"tail-time/internal/openai"
+	"tail-time/internal/tale"
 )
 
 type Config struct {
-	Event  aws.S3EventDetail
-	Client *oai.Client
+	Event          _aws.S3EventDetail
+	OpenAiClient   openai.ClientAPI
+	S3ObjectClient _s3.GetObjectAPI
 }
 
 type Audio struct {
@@ -40,19 +49,38 @@ func (o Audio) Generate(ctx context.Context) ([]byte, error) {
 }
 
 func (o Audio) getTextFromS3(ctx context.Context, bucket string, key string) (string, error) {
-	text := fmt.Sprintf("Lets get %s from %s", key, bucket)
+	result, err := o.config.S3ObjectClient.GetObject(ctx, &s3.GetObjectInput{
+		Bucket: aws.String(bucket),
+		Key:    aws.String(key),
+	})
+	if err != nil {
+		return "", fmt.Errorf("failed to get object from s3: %w", err)
+	}
 
-	return text, nil
+	body, err := io.ReadAll(result.Body)
+	if err != nil {
+		return "", fmt.Errorf("failed to read object body from s3: %w", err)
+	}
+
+	var t tale.Tale
+	err = json.Unmarshal(body, &t)
+	if err != nil {
+		return "", fmt.Errorf("failed to unmarshal tale: %w", err)
+	}
+
+	return t.Text, nil
 }
 
 func (o Audio) convertTextToAudio(ctx context.Context, text string) ([]byte, error) {
-	prompt := oai.TextToSpeechPrompt{
+	prompt := openai.TextToSpeechPrompt{
 		Model: "tts-1",
 		Voice: "nova",
 		Input: text,
 	}
 
-	response, err := o.config.Client.TextToSpeech(ctx, prompt)
+	log.Printf("Sending [%s] to TTS API", text)
+
+	response, err := o.config.OpenAiClient.TextToSpeech(ctx, prompt)
 	if err != nil {
 		return []byte{}, fmt.Errorf("failed to get text to speech response: %w", err)
 	}

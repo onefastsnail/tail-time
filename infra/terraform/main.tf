@@ -70,10 +70,15 @@ module "generate_tale_audio_lambda" {
   app_binary_path  = "./dist/bin/generate-audio/bootstrap"
   app_archive_path = "./dist/generate-audio.zip"
   permissions = {
-    s3 = {
+    s3Put = {
       actions   = ["s3:PutObject"]
       effect    = "Allow"
       resources = ["${aws_s3_bucket.tales.arn}/audio/*"]
+    }
+    s3Get = {
+      actions   = ["s3:GetObject"]
+      effect    = "Allow"
+      resources = ["${aws_s3_bucket.tales.arn}/raw/*"]
     }
   }
   environment = {
@@ -135,11 +140,11 @@ resource "aws_cloudwatch_event_target" "send_text_email" {
   arn       = module.send_tale_text_lambda.lambda_function.arn
 }
 
-# resource "aws_cloudwatch_event_target" "generate_audio_email" {
-#   rule      = aws_cloudwatch_event_rule.tale_text_created_event_rule.name
-#   target_id = "generate-audio-email"
-#   arn       = module.generate_tale_audio_lambda.lambda_function.arn
-# }
+resource "aws_cloudwatch_event_target" "generate_audio_email" {
+  rule      = aws_cloudwatch_event_rule.tale_text_created_event_rule.name
+  target_id = "generate-audio-email"
+  arn       = module.generate_tale_audio_lambda.lambda_function.arn
+}
 
 resource "aws_lambda_permission" "send_text_email_permission" {
   action        = "lambda:InvokeFunction"

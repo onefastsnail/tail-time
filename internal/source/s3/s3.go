@@ -10,13 +10,13 @@ import (
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 
-	iaws "tail-time/internal/aws"
+	_aws "tail-time/internal/aws"
 	"tail-time/internal/tale"
 )
 
 type Config struct {
 	Region string
-	Event  iaws.S3EventDetail
+	Event  _aws.S3EventDetail
 }
 
 type S3 struct {

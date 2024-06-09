@@ -1,3 +1,5 @@
+//go:generate mockgen -source=$GOFILE -destination=mock/mock_$GOFILE -package=mock
+
 package openai
 
 import (
@@ -8,6 +10,12 @@ import (
 	"io"
 	"net/http"
 )
+
+type ClientAPI interface {
+	Completion(ctx context.Context, prompt CompletionPrompt) (*CompletionPromptResponse, error)
+	ChatCompletion(ctx context.Context, prompt ChatCompletionPrompt) (*ChatCompletionPromptResponse, error)
+	TextToSpeech(ctx context.Context, prompt TextToSpeechPrompt) ([]byte, error)
+}
 
 type CompletionPrompt struct {
 	Model       string `json:"model"`

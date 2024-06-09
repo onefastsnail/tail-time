@@ -8,7 +8,7 @@ import (
 	"github.com/aws/aws-lambda-go/lambda"
 
 	"tail-time/internal/destination/s3/json"
-	oai "tail-time/internal/openai"
+	"tail-time/internal/openai"
 	"tail-time/internal/source/openai/text"
 	"tail-time/internal/tale"
 	"tail-time/internal/tales"
@@ -27,7 +27,7 @@ func HandleRequest(ctx context.Context, event customEvent) (string, error) {
 		Source: text.New(text.Config{
 			Topic:    event["topic"],
 			Language: "English",
-			Client: oai.New(oai.Config{
+			Client: openai.New(openai.Config{
 				APIKey:  os.Getenv("OPENAI_API_KEY"),
 				BaseURL: "https://api.openai.com",
 			}),

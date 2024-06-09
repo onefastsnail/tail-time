@@ -4,12 +4,14 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/aws/aws-sdk-go-v2/config"
+	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"log"
 	"os"
 
 	"tail-time/internal/aws"
-	audiod "tail-time/internal/destination/s3/audio"
-	oai "tail-time/internal/openai"
+	s3audio "tail-time/internal/destination/s3/audio"
+	"tail-time/internal/openai"
 	"tail-time/internal/source/openai/audio"
 	"tail-time/internal/tales"
 
@@ -21,18 +23,26 @@ func HandleRequest(ctx context.Context, event events.CloudWatchEvent) (string, e
 	var record aws.S3EventDetail
 	err := json.Unmarshal(event.Detail, &record)
 	if err != nil {
-		return "fail", fmt.Errorf("failed to unmarshal event: %v", err)
+		return "", fmt.Errorf("failed to unmarshal event: %v", err)
+	}
+
+	cfg, err := config.LoadDefaultConfig(ctx)
+	if err != nil {
+		return "", fmt.Errorf("failed to load AWS config: %v", err)
 	}
 
 	talesWorkload := tales.New[[]byte](tales.Config[[]byte]{
 		Source: audio.New(audio.Config{
 			Event: record,
-			Client: oai.New(oai.Config{
+			OpenAiClient: openai.New(openai.Config{
 				APIKey:  os.Getenv("OPENAI_API_KEY"),
 				BaseURL: "https://api.openai.com",
 			}),
+			S3ObjectClient: s3.NewFromConfig(cfg, func(s *s3.Options) {
+				s.Region = os.Getenv("DESTINATION_BUCKET_REGION")
+			}),
 		}),
-		Destination: audiod.New(audiod.Config{
+		Destination: s3audio.New(s3audio.Config{
 			Region:     os.Getenv("DESTINATION_BUCKET_REGION"),
 			BucketName: os.Getenv("DESTINATION_BUCKET_NAME"),
 			Path:       "audio",
