@@ -13,7 +13,7 @@ import (
 	"tail-time/internal/destination/email"
 	"tail-time/internal/source/s3"
 	"tail-time/internal/tale"
-	"tail-time/internal/tales"
+	"tail-time/internal/worker"
 )
 
 func HandleRequest(ctx context.Context, event events.CloudWatchEvent) (string, error) {
@@ -23,7 +23,7 @@ func HandleRequest(ctx context.Context, event events.CloudWatchEvent) (string, e
 		return "fail", err
 	}
 
-	talesWorkload := tales.New[tale.Tale](tales.Config[tale.Tale]{
+	worker := worker.New[tale.Tale](worker.Config[tale.Tale]{
 		Source: s3.New(s3.Config{
 			Region: os.Getenv("SOURCE_BUCKET_REGION"),
 			Event:  record,
@@ -34,7 +34,7 @@ func HandleRequest(ctx context.Context, event events.CloudWatchEvent) (string, e
 		}),
 	})
 
-	err = talesWorkload.Run(ctx)
+	err = worker.Run(ctx)
 	if err != nil {
 		log.Fatalf("Failed to run: %v", err)
 	}

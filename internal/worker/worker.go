@@ -1,4 +1,4 @@
-package tales
+package worker
 
 import (
 	"context"
@@ -14,25 +14,25 @@ type Config[T any] struct {
 	Destination destination.Destination[T]
 }
 
-type Tales[T any] struct {
+type Worker[T any] struct {
 	Config[T]
 }
 
-func New[T any](config Config[T]) *Tales[T] {
-	return &Tales[T]{
+func New[T any](config Config[T]) *Worker[T] {
+	return &Worker[T]{
 		config,
 	}
 }
 
-func (t Tales[T]) Run(ctx context.Context) error {
+func (t Worker[T]) Run(ctx context.Context) error {
 	tale, err := t.Source.Generate(ctx)
 	if err != nil {
-		return fmt.Errorf("failed to generate tale from source: %w", err)
+		return fmt.Errorf("failed to generate from source: %w", err)
 	}
 
 	err = t.Destination.Save(tale)
 	if err != nil {
-		return fmt.Errorf("failed to send tale to destination: %w", err)
+		return fmt.Errorf("failed to send to destination: %w", err)
 	}
 
 	return nil

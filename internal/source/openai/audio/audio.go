@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"math/rand"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
@@ -40,7 +41,10 @@ func (o Audio) Generate(ctx context.Context) ([]byte, error) {
 		return []byte{}, fmt.Errorf("could not convert text to audio: %v", err)
 	}
 
-	audio, err := o.convertTextToAudio(ctx, text)
+	voices := []string{"onyx", "echo", "nova"}
+	randIndex := rand.Intn(len(voices))
+
+	audio, err := o.convertTextToAudio(ctx, text, voices[randIndex])
 	if err != nil {
 		return []byte{}, fmt.Errorf("could not convert text to audio: %v", err)
 	}
@@ -71,10 +75,10 @@ func (o Audio) getTextFromS3(ctx context.Context, bucket string, key string) (st
 	return t.Text, nil
 }
 
-func (o Audio) convertTextToAudio(ctx context.Context, text string) ([]byte, error) {
+func (o Audio) convertTextToAudio(ctx context.Context, text string, voice string) ([]byte, error) {
 	prompt := openai.TextToSpeechPrompt{
 		Model: "tts-1",
-		Voice: "nova",
+		Voice: voice,
 		Input: text,
 	}
 

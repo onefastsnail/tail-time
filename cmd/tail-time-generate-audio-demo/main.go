@@ -11,7 +11,7 @@ import (
 	"tail-time/internal/destination/localfs"
 	"tail-time/internal/openai"
 	"tail-time/internal/source/openai/audio"
-	"tail-time/internal/tales"
+	"tail-time/internal/worker"
 )
 
 func main() {
@@ -22,7 +22,7 @@ func main() {
 
 	record := aws.S3EventDetail{}
 
-	tales := tales.New[[]byte](tales.Config[[]byte]{
+	worker := worker.New[[]byte](worker.Config[[]byte]{
 		Source: audio.New(audio.Config{
 			Event: record,
 			OpenAiClient: openai.New(openai.Config{
@@ -35,7 +35,7 @@ func main() {
 		}),
 	})
 
-	err = tales.Run(context.TODO())
+	err = worker.Run(context.TODO())
 	if err != nil {
 		log.Fatalf("Failed to run: %v", err)
 	}

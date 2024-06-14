@@ -37,7 +37,7 @@ func (s *openAISuite) TestGenerate_OK() {
 	ai := New(Config{
 		Topic:    "dinosaurs",
 		Language: "English",
-		Client: openai.New(openai.Config{
+		OpenAiClient: openai.New(openai.Config{
 			APIKey:  "testing",
 			BaseURL: server.URL,
 		}),

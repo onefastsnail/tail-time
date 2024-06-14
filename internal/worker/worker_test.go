@@ -1,4 +1,4 @@
-package tales
+package worker
 
 import (
 	"context"
@@ -65,7 +65,7 @@ func (s *TalesSuite) TestSource_Fails() {
 	err := tales.Run(context.TODO())
 
 	// Then: An error from the source
-	s.Equal("failed to generate tale from source: oops", err.Error())
+	s.Equal("failed to generate from source: oops", err.Error())
 }
 
 func (s *TalesSuite) TestDestination_Fails() {
@@ -86,5 +86,5 @@ func (s *TalesSuite) TestDestination_Fails() {
 	err := tales.Run(context.TODO())
 
 	// Then: An error from the destination
-	s.Equal("failed to send tale to destination: oops", err.Error())
+	s.Equal("failed to send to destination: oops", err.Error())
 }

@@ -11,7 +11,7 @@ import (
 	"tail-time/internal/openai"
 	"tail-time/internal/source/openai/text"
 	"tail-time/internal/tale"
-	"tail-time/internal/tales"
+	"tail-time/internal/worker"
 )
 
 type customEvent = map[string]string
@@ -23,11 +23,11 @@ func HandleRequest(ctx context.Context, event customEvent) (string, error) {
 
 	log.Printf("Creating tale about [%s]", event["topic"])
 
-	talesWorkload := tales.New[tale.Tale](tales.Config[tale.Tale]{
+	worker := worker.New[tale.Tale](worker.Config[tale.Tale]{
 		Source: text.New(text.Config{
 			Topic:    event["topic"],
 			Language: "English",
-			Client: openai.New(openai.Config{
+			OpenAiClient: openai.New(openai.Config{
 				APIKey:  os.Getenv("OPENAI_API_KEY"),
 				BaseURL: "https://api.openai.com",
 			}),
@@ -39,7 +39,7 @@ func HandleRequest(ctx context.Context, event customEvent) (string, error) {
 		}),
 	})
 
-	err := talesWorkload.Run(ctx)
+	err := worker.Run(ctx)
 	if err != nil {
 		log.Fatalf("Failed to run: %v", err)
 	}

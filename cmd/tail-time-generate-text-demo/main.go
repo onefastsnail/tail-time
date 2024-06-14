@@ -11,7 +11,7 @@ import (
 	"tail-time/internal/openai"
 	"tail-time/internal/source/openai/text"
 	"tail-time/internal/tale"
-	"tail-time/internal/tales"
+	"tail-time/internal/worker"
 )
 
 func main() {
@@ -23,11 +23,11 @@ func main() {
 	//topic := os.Args[1]
 	topic := "bikes and forests"
 
-	tales := tales.New[tale.Tale](tales.Config[tale.Tale]{
+	worker := worker.New[tale.Tale](worker.Config[tale.Tale]{
 		Source: text.New(text.Config{
 			Topic:    topic,
 			Language: "English",
-			Client: openai.New(openai.Config{
+			OpenAiClient: openai.New(openai.Config{
 				APIKey:  os.Getenv("OPENAI_API_KEY"),
 				BaseURL: "https://api.openai.com",
 			}),
@@ -42,7 +42,7 @@ func main() {
 		//}),
 	})
 
-	err = tales.Run(context.TODO())
+	err = worker.Run(context.TODO())
 	if err != nil {
 		log.Fatalf("Failed to run: %v", err)
 	}

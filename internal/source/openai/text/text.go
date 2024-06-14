@@ -11,9 +11,9 @@ import (
 )
 
 type Config struct {
-	Topic    string
-	Language string
-	Client   *openai.Client
+	Topic        string
+	Language     string
+	OpenAiClient openai.ClientAPI
 }
 
 type Text struct {
@@ -47,7 +47,7 @@ func (o Text) Generate(ctx context.Context) (tale.Tale, error) {
 		Temperature: 1,
 	}
 
-	response, err := o.config.Client.ChatCompletion(ctx, storyPrompt)
+	response, err := o.config.OpenAiClient.ChatCompletion(ctx, storyPrompt)
 	if err != nil {
 		return tale.Tale{}, fmt.Errorf("failed to get chat completetion response: %w", err)
 	}

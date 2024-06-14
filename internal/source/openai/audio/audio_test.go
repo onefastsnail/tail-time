@@ -36,7 +36,7 @@ func (s *AudioSuite) TestAudio_ConvertTextToAudio() {
 		OpenAiClient: mockOpenAiClient,
 	})
 
-	text, err := audio.convertTextToAudio(context.Background(), "test")
+	text, err := audio.convertTextToAudio(context.Background(), "test", "onyx")
 
 	s.NoError(err)
 	s.Equal(text, []byte("test"))
@@ -50,7 +50,7 @@ func (s *AudioSuite) TestAudio_ConvertTextToAudioFails() {
 		OpenAiClient: mockOpenAiClient,
 	})
 
-	text, err := audio.convertTextToAudio(context.Background(), "test")
+	text, err := audio.convertTextToAudio(context.Background(), "test", "onyx")
 
 	s.EqualError(err, "failed to get text to speech response: oops")
 	s.Equal(text, []byte{})
