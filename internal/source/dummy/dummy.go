@@ -8,7 +8,7 @@ import (
 )
 
 type Config struct {
-	Topic string
+	Text string
 }
 
 type Dummy struct {
@@ -19,12 +19,12 @@ func New(config Config) *Dummy {
 	return &Dummy{config: config}
 }
 
-func (d Dummy) Generate(ctx context.Context) (tale.Tale, error) {
+func (d Dummy) Generate(_ context.Context) (tale.Tale, error) {
 	return tale.Tale{
 		Topic:     "dummy",
 		Language:  "English",
 		Title:     "A story",
-		Text:      "Once upon a time... The end.",
+		Text:      d.config.Text,
 		CreatedAt: time.Now(),
 	}, nil
 }

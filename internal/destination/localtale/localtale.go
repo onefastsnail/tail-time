@@ -25,9 +25,9 @@ func New(config Config) *LocalTale {
 }
 
 func (l LocalTale) Save(tale tale.Tale) error {
-	data, err := json.Marshal(tale)
+	data, _ := json.Marshal(tale)
 
-	err = os.MkdirAll(l.config.Path, 0755)
+	err := os.MkdirAll(l.config.Path, 0755)
 	if err != nil {
 		return fmt.Errorf("failed to create directory: %v", err)
 	}
