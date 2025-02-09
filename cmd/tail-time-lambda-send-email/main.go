@@ -23,7 +23,7 @@ func HandleRequest(ctx context.Context, event events.CloudWatchEvent) (string, e
 		return "fail", err
 	}
 
-	worker := worker.New[tale.Tale](worker.Config[tale.Tale]{
+	w := worker.New[tale.Tale](worker.Config[tale.Tale]{
 		Source: s3.New(s3.Config{
 			Region: os.Getenv("SOURCE_BUCKET_REGION"),
 			Event:  record,
@@ -34,7 +34,7 @@ func HandleRequest(ctx context.Context, event events.CloudWatchEvent) (string, e
 		}),
 	})
 
-	err = worker.Run(ctx)
+	err = w.Run(ctx)
 	if err != nil {
 		log.Fatalf("Failed to run: %v", err)
 	}

@@ -42,10 +42,10 @@ type CompletionPromptResponse struct {
 }
 
 type ChatCompletionPrompt struct {
-	Model       string                        `json:"model"`
-	Messages    []ChatCompletionPromptMessage `json:"messages"`
-	Temperature int                           `json:"temperature"`
-	MaxTokens   int                           `json:"max_tokens"`
+	Model               string                        `json:"model"`
+	Messages            []ChatCompletionPromptMessage `json:"messages"`
+	Temperature         float32                       `json:"temperature"`
+	MaxCompletionTokens int                           `json:"max_completion_tokens"`
 }
 
 type TextToSpeechPrompt struct {

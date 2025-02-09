@@ -99,7 +99,7 @@ resource "aws_cloudwatch_event_rule" "every_day" {
 resource "aws_cloudwatch_event_target" "every_day" {
   rule  = aws_cloudwatch_event_rule.every_day.name
   arn   = module.generate_tale_text_lambda.lambda_function.arn
-  input = jsonencode({ topic : var.default_tale_topic })
+  input = jsonencode({ topic : var.default_tale_topic, language: "English" })
 }
 
 resource "aws_lambda_permission" "allow_cloudwatch_to_call_generate" {

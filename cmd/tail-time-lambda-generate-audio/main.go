@@ -31,7 +31,7 @@ func HandleRequest(ctx context.Context, event events.CloudWatchEvent) (string, e
 		return "", fmt.Errorf("failed to load AWS config: %v", err)
 	}
 
-	worker := worker.New[[]byte](worker.Config[[]byte]{
+	w := worker.New[[]byte](worker.Config[[]byte]{
 		Source: audio.New(audio.Config{
 			Event: record,
 			OpenAiClient: openai.New(openai.Config{
@@ -49,7 +49,7 @@ func HandleRequest(ctx context.Context, event events.CloudWatchEvent) (string, e
 		}),
 	})
 
-	err = worker.Run(ctx)
+	err = w.Run(ctx)
 	if err != nil {
 		log.Fatalf("Failed to run: %v", err)
 	}

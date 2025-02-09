@@ -34,17 +34,20 @@ func New(config Config) *Text {
 func (o Text) Generate(ctx context.Context) (tale.Tale, error) {
 	// Be careful not to use all your tokens per minute quota!
 
+	length := 1000
+
 	storyPrompt := openai.ChatCompletionPrompt{
-		Model: "gpt-3.5-turbo",
+		Model: "gpt-4o-mini",
 		Messages: []openai.ChatCompletionPromptMessage{
-			{Role: "system", Content: "You are a story writer for young children"},
-			{Role: "system", Content: "Your stories should be age-appropriate and suitable for children, with a clear beginning, middle, and end. The story should capture the reader's imagination and emotions, with characters that are relatable and memorable. The story's theme or moral should be positive and inspiring, teaching children important lessons about kindness, hope, team work or perseverance."},
-			{Role: "system", Content: "Also provide a category and a one line summary about your stories."},
-			{Role: "system", Content: `You only reply in JSON. The JSON format of your reply should be: {"title": "Story Title", "content": "Story content goes here.", "category": "Category of the story", "summary": "Summary of the story"}.`},
-			{Role: "user", Content: fmt.Sprintf("Write a 1000 word story in %s about %s", o.config.Language, o.config.Topic)},
+			{Role: "system", Content: "You are a skilled children's story writer, crafting engaging, age-appropriate bedtime stories that spark imagination and emotions."},
+			{Role: "system", Content: "Each story should have a clear beginning, middle, and end, with memorable characters and a heartwarming or adventurous plot. Include some or all of the following positive morals: kindness, perseverance, teamwork, and hope."},
+			{Role: "system", Content: "Use rich sensory descriptions, simple yet engaging language, and dialogue to bring the story to life. The tone should be warm and immersive."},
+			{Role: "system", Content: "Provide a category and a one-line summary. Additionally, include a short moral lesson at the end."},
+			{Role: "system", Content: `You must reply in valid JSON format. The JSON format of your reply should be: {"title": "Story Title", "content": "Story content goes here.", "category": "Category of the story", "summary": "Summary of the story"}.`},
+			{Role: "user", Content: fmt.Sprintf("Write a bedtime story in %s about %s. The story should be approximately %d words long.", o.config.Language, o.config.Topic, length)},
 		},
-		MaxTokens:   1200,
-		Temperature: 1,
+		MaxCompletionTokens: length * 2,
+		Temperature:         0.8,
 	}
 
 	response, err := o.config.OpenAiClient.ChatCompletion(ctx, storyPrompt)

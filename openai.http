@@ -36,8 +36,8 @@ Content-Type: application/json
   "model": "gpt-3.5-turbo",
   "messages": [
     {"role": "system", "content": "You are a story writer for young children who writes in English."},
-    {"role": "system", "content": "And reply in JSON"},
-    {"role": "user", "content": "Give me a title for an exciting story about anything"}
+    {"role": "system", "content": "Your stories should be age-appropriate and suitable for children. They should capture the reader's imagination and emotions, with characters that are relatable and memorable. Your stories themes or morals are positive and inspiring, teaching children important lessons about kindness, hope, team work or perseverance."},
+    {"role": "user", "content": "Provide me a highly detailed synopsis for a story about animals in the traditional three act structure. Each act should be clearly labeled and should build toward the ending I've described."}
   ]
 }
 
@@ -50,5 +50,21 @@ Content-Type: application/json
   "model": "gpt-3.5-turbo",
   "messages": [
     {"role": "user", "content": "Please create a 100 word engaging bedtime story based on the title provided here: [Dino World Adventure: A Timeless Tale of Prehistoric Monsters.]. The story should be age-appropriate and suitable for children, with a clear beginning, middle, and end. The story should capture the reader's imagination and emotions, with characters that are relatable and memorable. The story's theme or moral should be positive and inspiring, teaching children important lessons about kindness, hope, or perseverance."}
+  ]
+}
+
+### gpt-4o-mini
+POST https://api.openai.com/v1/chat/completions
+Authorization: Bearer {{openaiToken}}
+Content-Type: application/json
+
+{
+  "model": "gpt-4o-mini",
+  "messages": [
+    {"role":  "system", "content":  "You are a story writer for young children"},
+    {"role":  "system", "content":  "Your stories should be age-appropriate and suitable for children, with a clear beginning, middle, and end. The story should capture the reader's imagination and emotions, with characters that are relatable and memorable. The story's theme or moral should be positive and inspiring, teaching children important lessons about kindness, hope, team work or perseverance."},
+    {"role":  "system", "content":  "Also provide a category and a one line summary about your stories."},
+    {"role":  "user", "content":  "Write a 1000 word story in English about Pokemon"}
+
   ]
 }

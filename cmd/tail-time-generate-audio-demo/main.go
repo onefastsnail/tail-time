@@ -22,7 +22,7 @@ func main() {
 
 	record := aws.S3EventDetail{}
 
-	worker := worker.New[[]byte](worker.Config[[]byte]{
+	w := worker.New[[]byte](worker.Config[[]byte]{
 		Source: audio.New(audio.Config{
 			Event: record,
 			OpenAiClient: openai.New(openai.Config{
@@ -35,7 +35,7 @@ func main() {
 		}),
 	})
 
-	err = worker.Run(context.TODO())
+	err = w.Run(context.TODO())
 	if err != nil {
 		log.Fatalf("Failed to run: %v", err)
 	}

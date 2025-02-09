@@ -23,10 +23,10 @@ func HandleRequest(ctx context.Context, event customEvent) (string, error) {
 
 	log.Printf("Creating tale about [%s]", event["topic"])
 
-	worker := worker.New[tale.Tale](worker.Config[tale.Tale]{
+	w := worker.New[tale.Tale](worker.Config[tale.Tale]{
 		Source: text.New(text.Config{
 			Topic:    event["topic"],
-			Language: "English",
+			Language: event["language"],
 			OpenAiClient: openai.New(openai.Config{
 				APIKey:  os.Getenv("OPENAI_API_KEY"),
 				BaseURL: "https://api.openai.com",
@@ -39,7 +39,7 @@ func HandleRequest(ctx context.Context, event customEvent) (string, error) {
 		}),
 	})
 
-	err := worker.Run(ctx)
+	err := w.Run(ctx)
 	if err != nil {
 		log.Fatalf("Failed to run: %v", err)
 	}

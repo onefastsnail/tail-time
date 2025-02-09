@@ -7,7 +7,7 @@ import (
 
 	"github.com/joho/godotenv"
 
-	"tail-time/internal/destination"
+	"tail-time/internal/destination/localtale"
 	"tail-time/internal/openai"
 	"tail-time/internal/source/openai/text"
 	"tail-time/internal/tale"
@@ -21,9 +21,9 @@ func main() {
 	}
 
 	//topic := os.Args[1]
-	topic := "bikes and forests"
+	topic := "pokemon"
 
-	worker := worker.New[tale.Tale](worker.Config[tale.Tale]{
+	w := worker.New[tale.Tale](worker.Config[tale.Tale]{
 		Source: text.New(text.Config{
 			Topic:    topic,
 			Language: "English",
@@ -32,8 +32,9 @@ func main() {
 				BaseURL: "https://api.openai.com",
 			}),
 		}),
-		//Source: dummy.NewText(dummy.Config{Topic: topic}),
-		Destination: destination.Log[tale.Tale]{},
+		//Source: dummy.New(dummy.Config{Topic: topic}),
+		//Destination: destination.Log[tale.Tale]{},
+		Destination: localtale.New(localtale.Config{Path: "./tmp-tales"}),
 		//Destination: email.New(email.Config{From: os.Getenv("EMAIL_FROM"), To: os.Getenv("EMAIL_TO")}),
 		//Destination: s3.NewText(s3.Config{
 		//	Region:     os.Getenv("DESTINATION_BUCKET_REGION"),
@@ -42,7 +43,7 @@ func main() {
 		//}),
 	})
 
-	err = worker.Run(context.TODO())
+	err = w.Run(context.TODO())
 	if err != nil {
 		log.Fatalf("Failed to run: %v", err)
 	}
